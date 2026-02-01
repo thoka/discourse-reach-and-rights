@@ -6,16 +6,14 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
 import dIcon from "discourse/helpers/d-icon";
-import { ajax } from "discourse/lib/ajax";
 import { i18n } from "discourse-i18n";
 import VisiblePermissionsDetails from "./modal/visible-permissions-details";
-
-const PERMISSIONS_CACHE = new Map();
 
 export default class VisiblePermissionsSummary extends Component {
   @service modal;
   @service siteSettings;
   @service currentUser;
+  @service visiblePermissionsCache;
 
   @tracked data = null;
   @tracked loading = false;
@@ -60,29 +58,21 @@ export default class VisiblePermissionsSummary extends Component {
   @action
   async fetchData() {
     const categoryId = this.categoryId;
-    // eslint-disable-next-line no-console
-    console.log("VisiblePermissionsSummary Debug: fetchData with categoryId:", categoryId);
-    if (!categoryId || categoryId === this._lastCategoryId) {return;}
+    if (!categoryId || categoryId === this._lastCategoryId) {
+      return;
+    }
     this._lastCategoryId = categoryId;
 
-    // First check if the data is already in components args (from CategorySerializer)
     const category = this.args.category || this.args.outletArgs?.category;
     if (category?.visible_permissions) {
+      this.visiblePermissionsCache.setPermissions(categoryId, category.visible_permissions);
       this.data = category.visible_permissions;
       return;
     }
 
-    if (PERMISSIONS_CACHE.has(categoryId)) {
-      console.log("VisiblePermissionsSummary Debug: Cache SUCCESS 😇", categoryId);
-      this.data = PERMISSIONS_CACHE.get(categoryId);
-      return;
-    }
     this.loading = true;
     try {
-      const data = await ajax(`/c/${categoryId}/permissions.json`);
-      console.log("VisiblePermissionsSummary Debug: AJAX SUCCESS 😍", categoryId);
-      PERMISSIONS_CACHE.set(categoryId, data);
-      this.data = data;
+      this.data = await this.visiblePermissionsCache.getPermissions(categoryId);
     } catch {
       this.data = null;
     } finally {

@@ -6,14 +6,12 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import dIcon from "discourse/helpers/d-icon";
-import { ajax } from "discourse/lib/ajax";
 import { i18n } from "discourse-i18n";
-
-const PERMISSIONS_CACHE = new Map();
 
 export default class VisiblePermissionsTable extends Component {
   @service siteSettings;
   @service currentUser;
+  @service visiblePermissionsCache;
 
   @tracked data = null;
   @tracked loading = false;
@@ -25,26 +23,11 @@ export default class VisiblePermissionsTable extends Component {
   constructor(...args) {
     super(...args);
 
-    /*
-    console.log("this.args:", JSON.stringify(this.args));
-    console.log("this.model:", this.model);
-    console.log("this.data:", this.data);
-    console.log("this keys:", Object.keys(this));
-    console.log("args keys:", Object.keys(this.args || {}));
-    // Auch: Was ist das zweite Argument direkt?
-    console.log("raw args[1]:", args[1]);
-  
-    console.log("VisiblePermissionsTable args:", this.args.data);
-    console.log("VisiblePermissionsTable categoryId:", this.args.data.categoryId);
-    console.log("VisiblePermissionsTable instance:", this);
-    */
-
-    // Bindet Methoden explizit, falls der Dekorator allein nicht ausreicht
     this.getTotalCount = this.getTotalCount.bind(this);
 
     if (this.args.data) {
-      this.data = this.args.data; // ToDo: Fix this workaround
-      this.args = this.args.data; // ToDo: Fix this workaround
+      this.data = this.args.data;
+      this.args = this.args.data;
     }
   }
 
@@ -86,7 +69,6 @@ export default class VisiblePermissionsTable extends Component {
       return;
     }
 
-    // Modal/Direct Data Kontext
     if (this.args.data && Object.keys(this.args.data).length > 0) {
       this.data = this.args.data;
       return;
@@ -99,7 +81,6 @@ export default class VisiblePermissionsTable extends Component {
       return !isNaN(parsed) && parsed > 0;
     };
 
-    // DOM Fallback: Suche nach dem Attribut im nächsten Eltern-Element
     if (!isValidId(rawId) && currentElement) {
       const container = currentElement.closest("[data-category-id]");
       rawId = container?.dataset?.categoryId;
@@ -108,37 +89,25 @@ export default class VisiblePermissionsTable extends Component {
     const categoryId = parseInt(rawId, 10);
 
     if (isNaN(categoryId) || categoryId <= 0) {
-      // ToDo: Log error
       return;
     }
 
-    // Check for data in category model before fetching (Injected via CategorySerializer)
     const topic = this.args.topic || this.args.model?.topic;
     const modelCategory = this.args.category || this.args.model?.category;
     
-    // Attempt to find the category object if it has visible_permissions
     const categorySource = [modelCategory, topic?.category].find(c => c?.id === categoryId && c?.visible_permissions);
     
     if (categorySource?.visible_permissions) {
+      this.visiblePermissionsCache.setPermissions(categoryId, categorySource.visible_permissions);
       this.data = categorySource.visible_permissions;
       this._lastCategoryId = categoryId;
-      return;
-    }
-
-    if (
-      PERMISSIONS_CACHE.has(categoryId) &&
-      this._lastCategoryId === categoryId
-    ) {
-      this.data = PERMISSIONS_CACHE.get(categoryId);
       return;
     }
 
     this.loading = true;
     this.error = false;
     try {
-      const data = await ajax(`/c/${categoryId}/permissions.json`);
-      PERMISSIONS_CACHE.set(categoryId, data);
-      this.data = data;
+      this.data = await this.visiblePermissionsCache.getPermissions(categoryId);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("VisiblePermissionsTable Error:", e);
