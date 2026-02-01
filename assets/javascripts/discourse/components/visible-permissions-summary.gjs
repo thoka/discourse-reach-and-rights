@@ -73,12 +73,14 @@ export default class VisiblePermissionsSummary extends Component {
     }
 
     if (PERMISSIONS_CACHE.has(categoryId)) {
+      console.log("VisiblePermissionsSummary Debug: Cache SUCCESS 😇", categoryId);
       this.data = PERMISSIONS_CACHE.get(categoryId);
       return;
     }
     this.loading = true;
     try {
       const data = await ajax(`/c/${categoryId}/permissions.json`);
+      console.log("VisiblePermissionsSummary Debug: AJAX SUCCESS 😍", categoryId);
       PERMISSIONS_CACHE.set(categoryId, data);
       this.data = data;
     } catch {
