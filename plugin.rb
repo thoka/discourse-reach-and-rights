@@ -3,8 +3,8 @@
 # name: discourse-visible-permissions
 # about: display category group permissions to users via a bbcode tag
 # meta_topic_id: TODO
-# version: 0.0.1
-# authors: gemini-3-flash-preview prompted by Thomas Kalka
+# version: 0.0.2
+# authors: gemini-3-flash-preview prompted and debugged by Thomas Kalka
 # url: https://github.com/thoka/discourse-visible-permissions
 # required_version: 2.7.0
 
@@ -42,23 +42,26 @@ after_initialize do
   require_relative "app/controllers/discourse_visible_permissions/permissions_controller"
   require_relative "app/services/discourse_visible_permissions/permissions_fetcher"
 
-  add_to_serializer(:basic_category, :visible_permissions) do
-    return nil if !SiteSetting.discourse_visible_permissions_enabled
-    return nil if !scope&.user
-    return nil if scope.user.trust_level < SiteSetting.discourse_visible_permissions_min_trust_level
+  %i[category basic_category].each do |s|
+    add_to_serializer(s, :visible_permissions) do
+      return nil if !SiteSetting.discourse_visible_permissions_enabled
+      return nil if !scope&.user
+      if scope.user.trust_level < SiteSetting.discourse_visible_permissions_min_trust_level
+        return nil
+      end
 
-    # Use the fetcher with a short TTL (or 0) for serialization
-    # We could also use the cache here
-    result =
-      DiscourseVisiblePermissions::PermissionsFetcher.call(category: object, guardian: scope)
+      # Der Fetcher sollte Request-Level Caching nutzen, um N+1 zu vermeiden
+      result =
+        DiscourseVisiblePermissions::PermissionsFetcher.call(category: object, guardian: scope)
 
-    {
-      category_id: object.id,
-      category_name: object.name,
-      category_url: object.url,
-      group_permissions: result.permissions,
-      category_notification_totals: result.category_notification_totals,
-    }
+      {
+        category_id: object.id,
+        category_name: object.name,
+        category_url: object.url,
+        group_permissions: result.permissions,
+        category_notification_totals: result.category_notification_totals,
+      }
+    end
   end
 
   Discourse::Application.routes.prepend do
