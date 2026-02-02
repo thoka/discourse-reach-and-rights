@@ -508,3 +508,25 @@
     }
   }
 }
+
+.outreach-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  margin-left: 0.6em;
+  padding-left: 0.6em;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: normal;
+  font-size: 0.9em;
+
+  .d-icon {
+    font-size: 0.85em;
+    color: currentColor;
+    opacity: 0.9;
+  }
+}
+
+// Spezielle Korrektur für Buttons mit primären Farben
+.btn-primary .outreach-info {
+  border-left-color: rgba(255, 255, 255, 0.3);
+}
