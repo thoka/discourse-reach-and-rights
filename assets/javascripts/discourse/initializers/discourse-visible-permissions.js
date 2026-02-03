@@ -13,9 +13,8 @@ export default {
 
     withPluginApi((api) => {
       // Summary im Header vor dem "Thema erstellen" Button
-      api.renderInOutlet("before-create-topic-button", VisiblePermissionsSummary);
+      api.renderInOutlet("after-create-topic-button", VisiblePermissionsSummary);
       api.renderInOutlet("topic-footer-main-buttons-before-create", VisiblePermissionsSummary);
-
 
       // BBCode decoration
       api.decorateCookedElement(

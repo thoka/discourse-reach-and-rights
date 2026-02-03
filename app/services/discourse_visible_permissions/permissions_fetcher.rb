@@ -111,6 +111,7 @@ module DiscourseVisiblePermissions
               group_url: guardian.can_see?(group_obj) ? "/g/#{gd[:group_name]}" : nil,
               notification_level: gd[:notification_level],
               notification_levels: gd[:notification_levels],
+              user_count: gd[:user_count],
             }
           end
 
@@ -131,6 +132,7 @@ module DiscourseVisiblePermissions
             group_url: "/g/everyone",
             notification_level: nil,
             notification_levels: cached_data[:category_notification_totals],
+            user_count: User.real.count,
           },
         )
       end

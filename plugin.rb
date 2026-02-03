@@ -3,7 +3,7 @@
 # name: discourse-visible-permissions
 # about: display category group permissions to users via a bbcode tag
 # meta_topic_id: TODO
-# version: 0.0.2
+# version: 0.0.3
 # authors: gemini-3-flash-preview prompted and debugged by Thomas Kalka
 # url: https://github.com/thoka/discourse-visible-permissions
 # required_version: 2.7.0

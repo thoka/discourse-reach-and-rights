@@ -17,6 +17,7 @@ export default class VisiblePermissionsTable extends Component {
   @tracked loading = false;
   @tracked error = false;
   @tracked _element = null;
+  @tracked showHeader = false;
 
   _lastCategoryId = null;
 
@@ -208,6 +209,7 @@ export default class VisiblePermissionsTable extends Component {
     return "";
   }
 
+
   getCount(perm, lvl) {
     const counts = perm.notification_levels;
     if (!counts) {
@@ -245,9 +247,11 @@ export default class VisiblePermissionsTable extends Component {
               "discourse_visible_permissions.load_error"
             }}</div>
         {{else if this.data}}
+          {{#if this.showHeader}}
           <h3 class="discourse-visible-permissions-title">
             {{this.localizedTableTitle}}
           </h3>
+          {{/if}}
 
           {{#if this.isShortView}}
             <div
@@ -269,6 +273,10 @@ export default class VisiblePermissionsTable extends Component {
           {{else}}
             <table class="discourse-visible-permissions-table modern-view">
               <thead>
+                <tr>
+                  <th colspan="3">Berechtigungen</th>
+                  <th colspan="5">Benachrichtigungen</th>
+                </tr>  
                 <tr>
                   <th class="group-name-header">{{i18n
                       "js.discourse_visible_permissions.group_name"
@@ -335,7 +343,7 @@ export default class VisiblePermissionsTable extends Component {
                         </a>
                       {{/if}}
                     </td>
-                    <td class="users-count-cell cell">
+                    <td class="users-count-cell num">
                       {{perm.user_count}}
                     </td>
                     <td
@@ -377,10 +385,10 @@ export default class VisiblePermissionsTable extends Component {
               </tbody>
               <tfoot>
                 <tr class="summary-row">
-                  <td class="group-name-cell cell" colspan="1">
+                  <td class="group-name-cell cell">
                     {{i18n "js.discourse_visible_permissions.total"}}
                   </td>
-                  <td class="users-count-cell cell">
+                  <td class="users-count-cell num" style="text-align: center;">
                     {{this.totalReach}}
                   </td>
                   <td colspan="2"></td>

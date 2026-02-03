@@ -29,6 +29,7 @@ export default class VisiblePermissionsDetails extends Component {
           <VisiblePermissionsTable
             @data={{this.data}}
             @categoryId={{this.categoryId}}
+            @showHeader=false
           />
         </div>
       </:body>

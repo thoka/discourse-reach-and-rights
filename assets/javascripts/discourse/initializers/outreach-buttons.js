@@ -1,14 +1,15 @@
+import { iconHTML } from "discourse/lib/icon-library";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { iconHTML } from "discourse-common/lib/icon-library";
 
 export default {
   name: "outreach-buttons",
-
+  // ToDo: wir brauchen dies wahrscheinlich nicht
   initialize() {
     withPluginApi("1.34.0", (api) => {
       // Wir nutzen onPageChange, um alle relevanten Buttons im DOM zu finden.
       // Dies erfasst sowohl GJS-Komponenten als auch Widgets.
       api.onPageChange(() => {
+        return;
         console.log("Outreach-Button-Initializer läuft");
         const buttons = document.querySelectorAll(
           "#create-topic, .btn-primary.create, .btn-primary.reply"

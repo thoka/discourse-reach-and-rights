@@ -129,9 +129,10 @@
           vertical-align: middle;
 
           &.group-name-cell {
+            min-width: 15em;
             text-align: left;
             font-weight: bold;
-            display: flex;
+            // display: flex;
             align-items: center;
             gap: 8px;
 
@@ -231,7 +232,7 @@
 
         .summary-row {
           .group-name-cell {
-            text-align: right;
+            text-align: left;
             padding-right: 1em;
           }
 
@@ -490,6 +491,11 @@
 
   .access-level-cell {
     font-weight: bold;
+  }
+
+  .discourse-visible-permissions-table th.num,
+  .discourse-visible-permissions-table td.num {
+    text-align: right;
   }
 }
 
