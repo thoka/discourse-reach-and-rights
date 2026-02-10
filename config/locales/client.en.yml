@@ -3,14 +3,15 @@ en:
     admin:
       site_settings:
         categories:
-          discourse_reach_and_rights: "Discourse Visible Permissions"
+          discourse_reach_and_rights: "Reach and Rights"
+          discourse-reach-and-rights: "Reach and Rights"
   js:
     discourse_reach_and_rights:
       loading: "Loading category permissions..."
       load_error: "Could not load category permissions."
       missing_category: "Missing category ID for reach and rights."
-      modal_title: "Category Permissions"
-      table_title: "Permissions for %{category_name}"
+      modal_title: "Reach and Rights"
+      table_title: "Reach and Rights in %{category_name}"
       permissions_header: "Permission"
       group_default: "Group Default"
       default: "Default"
@@ -30,3 +31,4 @@ en:
       group_users_count: "Members"
       access_level: "Access"
       notification_level: "Notification"
+      total_reach: "Total Reach (users who can see this category)"

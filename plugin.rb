@@ -56,19 +56,15 @@ after_initialize do
       return nil if !scope&.user
       return nil if scope.user.trust_level < SiteSetting.discourse_reach_and_rights_min_trust_level
 
-      # Der Fetcher sollte Request-Level Caching nutzen, um N+1 zu vermeiden
-      result = DiscourseReachAndRights::PermissionsFetcher.call(category: object, guardian: scope)
       stats = DiscourseReachAndRights::StatsStore.stats_for(object.id)
 
       {
         category_id: object.id,
-        category_name: object.name,
-        category_url: object.url,
-        group_permissions: result.permissions,
-        category_notification_totals: result.category_notification_totals,
-        reach_count: stats&.[](:reach_count) || 0,
-        watching_count: stats&.[](:watching_count) || 0,
-        watching_first_post_count: stats&.[](:watching_first_post_count) || 0,
+        category_notification_totals: {
+          "3" => stats&.[](:watching_count) || 0,
+          "4" => stats&.[](:watching_count_first_post) || 0,
+          "total_reach" => stats&.[](:reach_count) || 0,
+        },
       }
     end
   end
@@ -78,20 +74,15 @@ after_initialize do
 
     if SiteSetting.discourse_reach_and_rights_enabled && scope&.user &&
          scope.user.trust_level >= SiteSetting.discourse_reach_and_rights_min_trust_level
-      stats =
-        DiscourseReachAndRights::Stat
-          .all
-          .each_with_object({}) do |s, h|
-            h[s.category_id] = {
-              reach_count: s.reach_count,
-              watching_count: s.watching_count,
-              watching_first_post_count: s.watching_first_post_count,
-            }
-          end
-
       cats.each do |c|
-        if stat = stats[c[:id]]
-          c[:reach_and_rights] = (c[:reach_and_rights] || {}).merge(stat)
+        if stat = DiscourseReachAndRights::StatsStore.stats_for(c[:id])
+          c[:reach_and_rights] = {
+            category_notification_totals: {
+              "3" => stat[:watching_count],
+              "4" => stat[:watching_count_first_post],
+              "total_reach" => stat[:reach_count],
+            },
+          }
         end
       end
     end

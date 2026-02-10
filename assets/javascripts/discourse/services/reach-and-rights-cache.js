@@ -1,11 +1,58 @@
-import Service from "@ember/service";
+import Service, { service } from "@ember/service";
+import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 
 const CACHE_TTL = 600000; // 10 Minuten in Millisekunden
 
 export default class ReachAndRightsCache extends Service {
+  @service messageBus;
+
+  @tracked _cacheVersion = 0;
   _cache = new Map();
   _promises = new Map();
+
+  constructor() {
+    super(...arguments);
+    this.messageBus.subscribe("/reach-and-rights/stats", (msg) => {
+      this.updateStats(msg);
+    });
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.messageBus.unsubscribe("/reach-and-rights/stats");
+  }
+
+  updateStats(stats) {
+    const categoryId = parseInt(stats.category_id, 10);
+    const entry = this._cache.get(categoryId);
+
+    const newTotals = {
+      3: stats.watching_count,
+      4: stats.watching_first_post_count,
+      total_reach: stats.reach_count,
+    };
+
+    if (entry) {
+      entry.data = {
+        ...entry.data,
+        category_notification_totals: {
+          ...(entry.data.category_notification_totals || {}),
+          ...newTotals,
+        },
+      };
+      entry.timestamp = Date.now();
+    } else {
+      this._cache.set(categoryId, {
+        data: {
+          category_id: categoryId,
+          category_notification_totals: newTotals,
+        },
+        timestamp: Date.now(),
+      });
+    }
+    this._cacheVersion++;
+  }
 
   async getPermissions(categoryId, force = false) {
     const entry = this._cache.get(categoryId);

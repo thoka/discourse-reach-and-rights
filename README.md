@@ -16,18 +16,6 @@ This plugin enables an infobox about configured permissions (who is allowed to c
 - **Localization**: Full support for German and English, including localized automatic group names (e.g., "jeder", "Team").
 - **Automatic Detection**: Using `[reach-and-rights]` without a category ID inside a topic automatically detects the category from the topic.
 
-## BBCode
-
-Primary tag: `[reach-and-rights]` (supports `category` and `view` attributes).
-Alias (deprecated): `[show-permissions]` for backward compatibility.
-
-Use:
-
-```
-[reach-and-rights]
-
-[reach-and-rights category=123]
-```
 
 ## Current Status
 
@@ -38,12 +26,9 @@ Use:
 
 Example BBCode:
 - `[reach-and-rights category=5]`
-- `[reach-and-rights category=5 view="classic"]` (Detailed matrix view)
 - `[reach-and-rights category=5 view="short"]` (Icon list by level)
 - `[reach-and-rights category=5 class="custom-class"]`
 - `[reach-and-rights]` (automatically detects the current category when used inside a topic)
-
-Also works with `[show-permissions]` for existing posts.
 
 ## Configuration
 

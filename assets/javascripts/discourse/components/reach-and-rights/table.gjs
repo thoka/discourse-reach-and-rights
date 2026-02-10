@@ -21,6 +21,17 @@ export default class ReachAndRightsTable extends Component {
 
   _lastCategoryId = null;
 
+  get effectiveData() {
+    // eslint-disable-next-line no-unused-expressions
+    this.reachAndRightsCache._cacheVersion;
+    const rawId = this.args.categoryId || this.args.model?.categoryId;
+    const categoryId = parseInt(rawId, 10);
+    if (isNaN(categoryId) || categoryId <= 0) {
+      return this.data;
+    }
+    return this.reachAndRightsCache._cache.get(categoryId)?.data || this.data;
+  }
+
   constructor(...args) {
     super(...args);
 
@@ -100,7 +111,7 @@ export default class ReachAndRightsTable extends Component {
       (c) => c?.id === categoryId && c?.reach_and_rights
     );
 
-    if (categorySource?.reach_and_rights) {
+    if (categorySource?.reach_and_rights?.group_permissions) {
       this.reachAndRightsCache.setPermissions(
         categoryId,
         categorySource.reach_and_rights
@@ -126,10 +137,11 @@ export default class ReachAndRightsTable extends Component {
   }
 
   get processedPermissions() {
-    if (!this.data?.group_permissions) {
+    const data = this.effectiveData;
+    if (!data?.group_permissions) {
       return [];
     }
-    return this.data.group_permissions.map((perm) => {
+    return data.group_permissions.map((perm) => {
       let permIcon, permColor, permTitle;
       if (perm.permission_type === 1) {
         permIcon = "plus";
@@ -223,15 +235,15 @@ export default class ReachAndRightsTable extends Component {
   }
 
   getTotalCount(level) {
-    // Defensiver Check verhindert Crash wenn 'this' oder 'data' fehlt
-    if (!this?.data?.category_notification_totals) {
+    const data = this.effectiveData;
+    if (!data?.category_notification_totals) {
       return -1;
     }
-    return this.data.category_notification_totals[level] || "";
+    return data.category_notification_totals[level] || "";
   }
 
   get totalReach() {
-    return this.data?.category_notification_totals?.total_reach || 0;
+    return this.effectiveData?.category_notification_totals?.total_reach || 0;
   }
 
   <template>
@@ -249,7 +261,7 @@ export default class ReachAndRightsTable extends Component {
           <div class="error-placeholder">{{i18n
               "discourse_reach_and_rights.load_error"
             }}</div>
-        {{else if this.data}}
+        {{else if this.effectiveData}}
           {{#if this.showHeader}}
             <h3 class="discourse-reach-and-rights-title">
               {{this.localizedTableTitle}}

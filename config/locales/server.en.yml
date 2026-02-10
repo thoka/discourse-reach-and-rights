@@ -18,3 +18,7 @@ en:
     trust_level_2: "trust level 2"
     trust_level_3: "trust level 3"
     trust_level_4: "trust level 4"
+  plugins:
+    discourse-reach-and-rights:
+      title: "Reach and Rights"
+      description: "Display category reach and group permissions."

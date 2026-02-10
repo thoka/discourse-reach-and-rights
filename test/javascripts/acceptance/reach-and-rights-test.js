@@ -2,7 +2,7 @@ import { test } from "qunit";
 import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
 import showPermissionsPretender from "../helpers/show-permissions-pretender";
 
-acceptance("Discourse Visible Permissions", function (needs) {
+acceptance("Reach and Rights", function (needs) {
   needs.user();
   needs.settings({ discourse_reach_and_rights_enabled: true });
   needs.pretender(showPermissionsPretender);

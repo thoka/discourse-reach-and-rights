@@ -18,3 +18,7 @@ de:
     trust_level_2: "Vertrauensstufe 2"
     trust_level_3: "Vertrauensstufe 3"
     trust_level_4: "Vertrauensstufe 4"
+  plugins:
+    discourse-reach-and-rights:
+      title: "Reach and Rights"
+      description: "Anzeige von Kategorie-Reichweite und Gruppenberechtigungen."

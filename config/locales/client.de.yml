@@ -3,14 +3,15 @@ de:
     admin:
       site_settings:
         categories:
-          discourse_reach_and_rights: "Discourse Visible Permissions"
+          discourse_reach_and_rights: "Reach and Rights"
+          discourse-reach-and-rights: "Reach and Rights"
   js:
     discourse_reach_and_rights:
       loading: "Lade Reach and Rights..."
       load_error: "Reach and Rights konnten nicht geladen werden."
       missing_category: "Fehlende Kategorie-ID für Reach and Rights."
       modal_title: "Reach and Rights"
-      table_title: "Rechte in %{category_name}"
+      table_title: "Reach and Rights in %{category_name}"
       permissions_header: "Berechtigung"
       group_default: "Gruppen-Standard"
       default: "Standard"
@@ -30,3 +31,4 @@ de:
       group_users_count: "Mitglieder"
       access_level: "Zugriff"
       notification_level: "Benachrichtigung"
+      total_reach: "Gesamtreichweite (Nutzer, die diese Kategorie sehen können)"

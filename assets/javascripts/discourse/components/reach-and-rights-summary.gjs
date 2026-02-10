@@ -20,6 +20,16 @@ export default class ReachAndRightsSummary extends Component {
 
   _lastCategoryId = null;
 
+  get effectiveData() {
+    // eslint-disable-next-line no-unused-expressions
+    this.reachAndRightsCache._cacheVersion;
+    const categoryId = this.categoryId;
+    if (!categoryId) {
+      return null;
+    }
+    return this.reachAndRightsCache._cache.get(categoryId)?.data || this.data;
+  }
+
   get categoryId() {
     const args = this.args || {};
     const outletArgs = args.outletArgs || {};
@@ -49,12 +59,13 @@ export default class ReachAndRightsSummary extends Component {
   }
 
   get notificationTotals() {
-    if (!this.data?.category_notification_totals) {
+    const data = this.effectiveData;
+    if (!data?.category_notification_totals) {
       return [];
     }
     return [3, 4, 2, 0]
       .map((lvl) => {
-        const count = this.data.category_notification_totals[lvl] || 0;
+        const count = data.category_notification_totals[lvl] || 0;
         if (count > 0) {
           let icon = "bell";
           if (lvl === 3) {
@@ -71,6 +82,10 @@ export default class ReachAndRightsSummary extends Component {
         return null;
       })
       .filter(Boolean);
+  }
+
+  get totalReach() {
+    return this.effectiveData?.category_notification_totals?.total_reach || 0;
   }
 
   @action
@@ -104,7 +119,8 @@ export default class ReachAndRightsSummary extends Component {
   @action
   showDetails(event) {
     event.preventDefault();
-    if (this.data) {
+    const data = this.effectiveData;
+    if (data) {
       const categoryId = this.categoryId;
       // eslint-disable-next-line no-console
       console.log(
@@ -113,7 +129,7 @@ export default class ReachAndRightsSummary extends Component {
       );
       this.modal.show(ReachAndRightsDetails, {
         model: {
-          data: this.data,
+          data,
           categoryId,
         },
       });
@@ -132,7 +148,7 @@ export default class ReachAndRightsSummary extends Component {
           <span class="loading-placeholder">{{i18n
               "discourse_reach_and_rights.loading"
             }}</span>
-        {{else if this.data}}
+        {{else if this.effectiveData}}
           <a
             href
             {{on "click" this.showDetails}}
@@ -148,6 +164,14 @@ export default class ReachAndRightsSummary extends Component {
             <span class="summary-label">{{i18n "discourse_reach_and_rights.potential_notifications"}}:</span>
             --}}
             <div class="notification-levels-container compact">
+              <span
+                class="notification-level-item reach-total"
+                title={{i18n "js.discourse_reach_and_rights.total_reach"}}
+              >
+                {{dIcon "users"}}
+                <span class="notification-count">{{this.totalReach}}</span>
+              </span>
+
               {{#each this.notificationTotals as |lvl|}}
                 <span class="notification-level-item">
                   {{dIcon lvl.icon}}

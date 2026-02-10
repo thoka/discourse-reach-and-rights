@@ -2,7 +2,7 @@
 
 require File.expand_path("../../../../spec/rails_helper", __dir__)
 
-RSpec.describe "Visible Permissions", type: :system do
+RSpec.describe "Reach and Rights", type: :system do
   fab!(:admin)
   fab!(:category)
   fab!(:group)
