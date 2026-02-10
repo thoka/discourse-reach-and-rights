@@ -306,81 +306,6 @@
   font-weight: bold;
 }
 
-/* Composer Summary Styles */
-.discourse-reach-and-rights-summary {
-  margin-top: 5px;
-  font-size: 0.9em;
-
-  .permissions-summary-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 4px 10px;
-    background-color: var(--primary-low);
-    border-radius: 4px;
-    color: var(--primary) !important;
-    text-decoration: none !important;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: var(--primary-low-mid);
-      text-decoration: none !important;
-
-      .details-icon {
-        color: var(--tertiary);
-      }
-    }
-
-    .summary-label {
-      font-weight: bold;
-      color: var(--primary-medium);
-    }
-
-    .notification-levels-container.compact {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-
-      .notification-level-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-
-        .d-icon {
-          width: 14px;
-          height: 14px;
-        }
-
-        .notification-count {
-          font-weight: bold;
-        }
-
-        &.level-watching {
-          color: var(--success);
-        }
-
-        &.level-watching-first {
-          color: var(--tertiary);
-        }
-
-        &.level-tracking {
-          color: var(--primary-medium);
-        }
-
-        &.level-muted {
-          color: var(--primary-low-mid);
-        }
-      }
-    }
-
-    .details-icon {
-      margin-left: 5px;
-      font-size: 0.8em;
-      color: var(--primary-low-mid);
-    }
-  }
-}
-
 .d-modal.discourse-reach-and-rights-details-modal {
   .modal-inner-container {
     max-width: 600px;
@@ -404,36 +329,37 @@
 .discourse-reach-and-rights-summary {
   display: inline-flex;
   align-items: center;
-  margin: 0.25em 0.5em;
-  font-size: var(--font-0);
+  margin: 0 0.5em;
   vertical-align: middle;
 
-  .permissions-summary-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-    padding: 4px 8px;
-    background: var(--primary-very-low);
-    border-radius: 12px;
-    text-decoration: none !important;
-    color: var(--primary) !important;
-    border: 1px solid transparent;
-    transition: all 0.2s ease-in-out;
+  .permissions-summary-trigger.btn {
+    /* Dezent auffällig: subtle highlight color */
+    background-color: var(--highlight-low);
+    border: 1px solid var(--highlight-low-mid, var(--primary-low-mid));
 
     &:hover {
-      background: var(--primary-low);
-      color: var(--primary) !important;
-      border-color: var(--primary-low-mid);
+      background-color: var(--highlight-medium, var(--primary-low-mid));
     }
 
-    .summary-label {
-      font-weight: normal;
-      font-size: 0.9em;
+    .notification-levels-container.compact {
+      display: inline-flex;
+      gap: 0.5em;
+      align-items: center;
+
+      .notification-level-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25em;
+
+        .notification-count {
+          font-weight: bold;
+        }
+      }
     }
 
     .details-icon {
-      margin-left: 2px;
-      opacity: 0.5;
+      margin-left: 0.25em;
+      opacity: 0.7;
     }
   }
 
@@ -498,22 +424,6 @@
   .discourse-reach-and-rights-table th.num,
   .discourse-reach-and-rights-table td.num {
     text-align: right;
-  }
-}
-
-.discourse-reach-and-rights-summary {
-  .notification-levels-container.compact {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    cursor: pointer;
-
-    .sum-symbol {
-      font-weight: bold;
-      font-size: var(--font-up-1);
-      color: var(--primary-high);
-      margin-right: 2px;
-    }
   }
 }
 

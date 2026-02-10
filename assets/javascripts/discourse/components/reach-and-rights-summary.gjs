@@ -156,22 +156,18 @@ export default class ReachAndRightsSummary extends Component {
 
   <template>
     {{#if this.shouldShow}}
-      <div
+      <button
         class="discourse-reach-and-rights-summary"
         {{didInsert this.fetchData}}
         {{didUpdate this.fetchData @outletArgs.category.id}}
         {{didUpdate this.fetchData @topic.category_id}}
+        {{on "click" this.showDetails}}
       >
         {{#if this.loading}}
           <span class="loading-placeholder">{{i18n
               "discourse_reach_and_rights.loading"
             }}</span>
         {{else if this.effectiveData}}
-          <a
-            href
-            {{on "click" this.showDetails}}
-            class="permissions-summary-trigger"
-          >
             <span
               class="sum-symbol"
               title={{i18n
@@ -197,10 +193,8 @@ export default class ReachAndRightsSummary extends Component {
                 </span>
               {{/each}}
             </div>
-            {{dIcon "info-circle" class="details-icon"}}
-          </a>
         {{/if}}
-      </div>
+      </button>
     {{/if}}
   </template>
 }
