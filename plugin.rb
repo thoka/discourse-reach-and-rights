@@ -79,13 +79,15 @@ after_initialize do
     if SiteSetting.discourse_reach_and_rights_enabled && scope&.user &&
          scope.user.trust_level >= SiteSetting.discourse_reach_and_rights_min_trust_level
       stats =
-        DiscourseReachAndRights::Stat.all.each_with_object({}) do |s, h|
-          h[s.category_id] = {
-            reach_count: s.reach_count,
-            watching_count: s.watching_count,
-            watching_first_post_count: s.watching_first_post_count,
-          }
-        end
+        DiscourseReachAndRights::Stat
+          .all
+          .each_with_object({}) do |s, h|
+            h[s.category_id] = {
+              reach_count: s.reach_count,
+              watching_count: s.watching_count,
+              watching_first_post_count: s.watching_first_post_count,
+            }
+          end
 
       cats.each do |c|
         if stat = stats[c[:id]]
