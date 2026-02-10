@@ -3,7 +3,7 @@
 # name: discourse-reach-and-rights
 # about: display category group permissions and reach to users via a bbcode tag
 # meta_topic_id: TODO
-# version: 0.1.0
+# version: 0.2.0
 # authors: gemini-3-flash-preview prompted and debugged by Thomas Kalka
 # url: https://github.com/thoka/discourse-reach-and-rights
 # required_version: 2.7.0
