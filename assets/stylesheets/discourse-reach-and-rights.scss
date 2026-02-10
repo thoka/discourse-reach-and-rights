@@ -329,13 +329,14 @@
 .discourse-reach-and-rights-summary {
   display: inline-flex;
   align-items: center;
-  margin: 0 0.5em;
+  margin: 0 0.0em;
   vertical-align: middle;
 
   &.permissions-summary-trigger.btn {
     /* Dezent auffällig: subtle highlight color */
     background-color: var(--highlight-low);
     border: 1px solid var(--highlight-low-mid, var(--primary-low-mid));
+    border-radius: 5px;
 
     &:hover {
       background-color: var(--highlight-medium, var(--primary-low-mid));
