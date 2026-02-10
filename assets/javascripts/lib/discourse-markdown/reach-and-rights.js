@@ -6,6 +6,8 @@ function addReachAndRights(buffer, state, attributes, applyDataAttributes) {
   token.attrs = [["class", "discourse-reach-and-rights"]];
   applyDataAttributes(token, attributes, "category");
   applyDataAttributes(token, attributes, "view");
+  applyDataAttributes(token, attributes, "show-header");
+  applyDataAttributes(token, attributes, "style");
   buffer.push(token);
 
   token = new state.Token("text", "", 0);
@@ -41,6 +43,9 @@ export function setup(helper) {
     "span.discourse-reach-and-rights",
     "span.discourse-visible-permissions",
     "span[data-category=*]",
+    "span[data-view=*]",
+    "span[data-show-header=*]",
+    "span[data-style=*]",
   ]);
 
   helper.registerPlugin((md) => {

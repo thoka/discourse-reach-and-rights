@@ -25,6 +25,9 @@ export default class ReachAndRightsCache extends Service {
 
   updateStats(stats) {
     const categoryId = parseInt(stats.category_id, 10);
+    if (isNaN(categoryId)) {
+      return;
+    }
     const entry = this._cache.get(categoryId);
 
     const newTotals = {
@@ -54,11 +57,18 @@ export default class ReachAndRightsCache extends Service {
     this._cacheVersion++;
   }
 
-  async getPermissions(categoryId, force = false) {
+  async getPermissions(rawId, force = false) {
+    const categoryId = parseInt(rawId, 10);
+    if (isNaN(categoryId)) {
+      return null;
+    }
     const entry = this._cache.get(categoryId);
     const now = Date.now();
 
-    if (!force && entry && now - entry.timestamp < CACHE_TTL) {
+    // Check if entry exists and has detailed group_permissions
+    const isDetailed = !!entry?.data?.group_permissions;
+
+    if (!force && entry && isDetailed && now - entry.timestamp < CACHE_TTL) {
       return entry.data;
     }
 
@@ -66,7 +76,7 @@ export default class ReachAndRightsCache extends Service {
       return this._promises.get(categoryId);
     }
 
-    const promise = ajax(`/c/${categoryId}/reach-and-rights.json`)
+    const promise = ajax(`/c/${categoryId}/reach-and-rights`)
       .then((data) => {
         this.setPermissions(categoryId, data);
         return data;
@@ -79,11 +89,22 @@ export default class ReachAndRightsCache extends Service {
     return promise;
   }
 
-  setPermissions(categoryId, data) {
-    this._cache.set(categoryId, {
-      data,
-      timestamp: Date.now(),
-    });
+  setPermissions(rawId, data) {
+    const categoryId = parseInt(rawId, 10);
+    if (isNaN(categoryId) || !data || Object.keys(data).length === 0) {
+      return;
+    }
+    const entry = this._cache.get(categoryId);
+    if (entry) {
+      entry.data = { ...entry.data, ...data };
+      entry.timestamp = Date.now();
+    } else {
+      this._cache.set(categoryId, {
+        data,
+        timestamp: Date.now(),
+      });
+    }
+    this._cacheVersion++;
   }
 
   clearNotify() {

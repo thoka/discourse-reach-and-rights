@@ -1,6 +1,6 @@
 import { test } from "qunit";
 import { acceptance, query } from "discourse/tests/helpers/qunit-helpers";
-import showPermissionsPretender from "../helpers/show-permissions-pretender";
+import showPermissionsPretender from "../helpers/reach-and-rights-pretender";
 
 acceptance("Reach and Rights", function (needs) {
   needs.user();

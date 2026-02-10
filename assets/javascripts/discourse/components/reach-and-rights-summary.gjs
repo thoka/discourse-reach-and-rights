@@ -20,26 +20,42 @@ export default class ReachAndRightsSummary extends Component {
 
   _lastCategoryId = null;
 
+  constructor() {
+    super(...arguments);
+    // console.log("Initial Args:", JSON.stringify(this.args,null,2));
+  }
+
   get effectiveData() {
+    if (!this || this.isDestroyed || this.isDestroying) {
+      return null;
+    }
     // eslint-disable-next-line no-unused-expressions
-    this.reachAndRightsCache._cacheVersion;
+    if (this.reachAndRightsCache) {
+      this.reachAndRightsCache._cacheVersion;
+    }
     const categoryId = this.categoryId;
     if (!categoryId) {
       return null;
     }
-    return this.reachAndRightsCache._cache.get(categoryId)?.data || this.data;
+    const cached = this.reachAndRightsCache?._cache?.get?.(categoryId)?.data;
+    return cached || this.data;
   }
 
   get categoryId() {
+    if (!this || this.isDestroyed || this.isDestroying) {
+      return null;
+    }
     const args = this.args || {};
     const outletArgs = args.outletArgs || {};
-    return (
+    const rawId =
       args.category?.id ||
       outletArgs.category?.id ||
       args.topic?.category_id ||
       outletArgs.topic?.category_id ||
-      outletArgs.composer?.category_id
-    );
+      outletArgs.composer?.category_id;
+
+    const parsed = parseInt(rawId, 10);
+    return isNaN(parsed) || parsed <= 0 ? null : parsed;
   }
 
   get shouldShow() {
@@ -122,11 +138,13 @@ export default class ReachAndRightsSummary extends Component {
     const data = this.effectiveData;
     if (data) {
       const categoryId = this.categoryId;
-      // eslint-disable-next-line no-console
-      console.log(
-        "ReachAndRightsSummary Debug: opening modal with categoryId",
-        categoryId
-      );
+      if (this.siteSettings.discourse_reach_and_rights_debug_enabled) {
+        // eslint-disable-next-line no-console
+        console.log("ReachAndRightsSummary [Debug] Opening modal:", {
+          categoryId,
+          data,
+        });
+      }
       this.modal.show(ReachAndRightsDetails, {
         model: {
           data,
@@ -159,7 +177,7 @@ export default class ReachAndRightsSummary extends Component {
               title={{i18n
                 "js.discourse_reach_and_rights.potential_notifications"
               }}
-            > &Sigma;</span>
+            ></span>
             {{!-- 
             <span class="summary-label">{{i18n "discourse_reach_and_rights.potential_notifications"}}:</span>
             --}}
@@ -168,7 +186,7 @@ export default class ReachAndRightsSummary extends Component {
                 class="notification-level-item reach-total"
                 title={{i18n "js.discourse_reach_and_rights.total_reach"}}
               >
-                {{dIcon "users"}}
+                {{dIcon "eye"}}
                 <span class="notification-count">{{this.totalReach}}</span>
               </span>
 
@@ -181,18 +199,8 @@ export default class ReachAndRightsSummary extends Component {
             </div>
             {{dIcon "info-circle" class="details-icon"}}
           </a>
-
-          {{#if this.siteSettings.discourse_reach_and_rights_debug_enabled}}
-            <div class="reach-and-rights-debug-info">
-              <pre>{{this.debugData}}</pre>
-            </div>
-          {{/if}}
         {{/if}}
       </div>
     {{/if}}
   </template>
-
-  get debugData() {
-    return JSON.stringify(this.effectiveData, null, 2);
-  }
 }

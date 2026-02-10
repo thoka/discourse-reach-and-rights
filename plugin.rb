@@ -91,10 +91,7 @@ after_initialize do
   end
 
   Discourse::Application.routes.prepend do
-    get "/c/:category_id/reach-and-rights" => "discourse_reach_and_rights/permissions#show",
-        :constraints => {
-          format: :json,
-        }
+    get "/c/:category_id/reach-and-rights" => "discourse_reach_and_rights/permissions#show"
   end
 
   if DiscourseReachAndRights::Stat.count == 0 && SiteSetting.discourse_reach_and_rights_enabled

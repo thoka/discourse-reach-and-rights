@@ -95,7 +95,7 @@
         th {
           padding: 0.5em 0.25em;
           text-align: center;
-          color: var(--primary-medium);
+          color: var(--primary);
 
           &.group-name-header {
             text-align: left;
@@ -175,7 +175,7 @@
 
           &.notification-cell {
             width: auto;
-            color: var(--primary-medium);
+            color: var(--primary);
             text-align: center;
 
             &.default-cell {
@@ -416,7 +416,7 @@
     background: var(--primary-very-low);
     border-radius: 12px;
     text-decoration: none !important;
-    color: var(--primary-medium) !important;
+    color: var(--primary) !important;
     border: 1px solid transparent;
     transition: all 0.2s ease-in-out;
 
@@ -455,7 +455,7 @@
 
     .d-icon {
       font-size: 0.85em;
-      color: var(--primary-medium);
+      color: var(--primary);
     }
 
     .notification-count {

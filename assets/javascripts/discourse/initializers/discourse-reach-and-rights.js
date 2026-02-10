@@ -36,6 +36,8 @@ export default {
           placeholders.forEach((placeholder) => {
             let categoryId = placeholder.dataset.category;
             const view = placeholder.dataset.view || "table";
+            const showHeader = placeholder.dataset.showHeader;
+            const style = placeholder.dataset.style;
 
             if (!categoryId && helper.model) {
               categoryId =
@@ -52,6 +54,8 @@ export default {
               helper.renderGlimmer(placeholder, ReachAndRightsTable, {
                 categoryId: parsedId,
                 view,
+                showHeader,
+                style,
               });
 
               placeholder.classList.remove("discourse-reach-and-rights");

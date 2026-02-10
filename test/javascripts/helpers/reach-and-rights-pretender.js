@@ -1,7 +1,7 @@
 export default function (helpers) {
   const { response } = helpers;
 
-  this.get("/c/1/permissions", () =>
+  this.get("/c/1/reach-and-rights", () =>
     response({
       category_id: 1,
       group_permissions: [

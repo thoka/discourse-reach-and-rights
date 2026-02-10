@@ -17,33 +17,68 @@ export default class ReachAndRightsTable extends Component {
   @tracked loading = false;
   @tracked error = false;
   @tracked _element = null;
-
-  get showHeader() {
-    return this.args.showHeader !== "false" && this.args.showHeader !== false;
-  }
+  @tracked _manualCategoryId = null;
 
   _lastCategoryId = null;
 
-  get effectiveData() {
-    // eslint-disable-next-line no-unused-expressions
-    this.reachAndRightsCache._cacheVersion;
-    const rawId = this.args.categoryId || this.args.model?.categoryId;
-    const categoryId = parseInt(rawId, 10);
-    if (isNaN(categoryId) || categoryId <= 0) {
-      return this.data;
+  get categoryId() {
+    if (!this || this.isDestroyed || this.isDestroying) {
+      return null;
     }
-    return this.reachAndRightsCache._cache.get(categoryId)?.data || this.data;
+
+    if (this._manualCategoryId) {
+      return this._manualCategoryId;
+    }
+
+    const args = this.args || {};
+    let rawId = args.categoryId || args.model?.categoryId;
+
+    const isValidId = (id) => {
+      const parsed = parseInt(id, 10);
+      return !isNaN(parsed) && parsed > 0;
+    };
+
+    if (!isValidId(rawId) && this._element) {
+      const container = this._element.closest("[data-category-id]");
+      rawId = container?.dataset?.categoryId;
+    }
+
+    const parsed = parseInt(rawId, 10);
+    return isNaN(parsed) || parsed <= 0 ? null : parsed;
   }
 
-  constructor(...args) {
-    super(...args);
-
-    this.getTotalCount = this.getTotalCount.bind(this);
-
-    if (this.args.data) {
-      this.data = this.args.data;
-      this.args = this.args.data;
+  get effectiveData() {
+    if (!this || this.isDestroyed || this.isDestroying) {
+      return {};
     }
+
+    // Consume version for reactivity to cache updates
+    if (this.reachAndRightsCache) {
+      // eslint-disable-next-line no-unused-expressions
+      this.reachAndRightsCache._cacheVersion;
+    }
+
+    const categoryId = this.categoryId;
+    if (!categoryId) {
+      return {};
+    }
+
+    // Prefer explicitly passed or locally fetched data, but only if it contains permissions
+    if (
+      this.data &&
+      parseInt(this.data.category_id, 10) === categoryId &&
+      this.data.group_permissions
+    ) {
+      return this.data;
+    }
+
+    // Fallback to cache lookup
+    const cached = this.reachAndRightsCache?._cache?.get?.(categoryId)?.data;
+    return cached || {};
+  }
+
+  get showHeader() {
+    return this.args.showHeader !== "false" && this.args.showHeader !== false;
   }
 
   get shouldRender() {
@@ -63,12 +98,21 @@ export default class ReachAndRightsTable extends Component {
   }
 
   get localizedTableTitle() {
-    if (!this.data) {
+    const data = this.effectiveData;
+    if (!this.hasData) {
       return "";
     }
     return i18n("js.discourse_reach_and_rights.table_title", {
-      category_name: this.data.category_name || "Unknown",
+      category_name: data.category_name || "Unknown",
     });
+  }
+
+  get hasData() {
+    const data = this.effectiveData;
+    return (
+      data &&
+      (data.group_permissions?.length > 0 || data.category_notification_totals)
+    );
   }
 
   @action
@@ -77,52 +121,42 @@ export default class ReachAndRightsTable extends Component {
       this._element = element;
     }
 
-    const currentElement =
-      element instanceof HTMLElement ? element : this._element;
-
     if (this.loading) {
       return;
     }
 
-    if (this.args.data && Object.keys(this.args.data).length > 0) {
+    if (
+      this.args.data?.group_permissions &&
+      this.args.data.group_permissions.length > 0
+    ) {
       this.data = this.args.data;
       return;
     }
 
-    let rawId = this.args.categoryId;
+    const categoryId = this.categoryId;
 
-    const isValidId = (id) => {
-      const parsed = parseInt(id, 10);
-      return !isNaN(parsed) && parsed > 0;
-    };
-
-    if (!isValidId(rawId) && currentElement) {
-      const container = currentElement.closest("[data-category-id]");
-      rawId = container?.dataset?.categoryId;
-    }
-
-    const categoryId = parseInt(rawId, 10);
-
-    if (isNaN(categoryId) || categoryId <= 0) {
+    if (!categoryId) {
       return;
     }
 
-    const topic = this.args.topic || this.args.model?.topic;
-    const modelCategory = this.args.category || this.args.model?.category;
+    const hasDetailedData =
+      this.data &&
+      parseInt(this.data.category_id, 10) === categoryId &&
+      this.data.group_permissions;
 
-    const categorySource = [modelCategory, topic?.category].find(
-      (c) => c?.id === categoryId && c?.reach_and_rights
-    );
-
-    if (categorySource?.reach_and_rights?.group_permissions) {
-      this.reachAndRightsCache.setPermissions(
-        categoryId,
-        categorySource.reach_and_rights
-      );
-      this.data = categorySource.reach_and_rights;
-      this._lastCategoryId = categoryId;
+    if (categoryId === this._lastCategoryId && hasDetailedData) {
       return;
     }
+
+    if (this._element && !this._manualCategoryId) {
+      this._manualCategoryId = categoryId;
+    }
+
+    if (this.data && parseInt(this.data.category_id, 10) !== categoryId) {
+      this.data = null;
+    }
+
+    this._lastCategoryId = categoryId;
 
     this.loading = true;
     this.error = false;
@@ -173,6 +207,7 @@ export default class ReachAndRightsTable extends Component {
     });
   }
 
+  @action
   getNotificationIcon(lvl) {
     if (lvl === 3) {
       return "d-watching";
@@ -192,6 +227,7 @@ export default class ReachAndRightsTable extends Component {
     return null;
   }
 
+  @action
   getNotificationTitle(lvl) {
     if (lvl === null || lvl === undefined) {
       return "";
@@ -209,6 +245,7 @@ export default class ReachAndRightsTable extends Component {
     return i18n(`js.discourse_reach_and_rights.notification_levels.${key}`);
   }
 
+  @action
   getNotificationTitleByName(level) {
     if (level === 3) {
       return "watching";
@@ -228,6 +265,7 @@ export default class ReachAndRightsTable extends Component {
     return "";
   }
 
+  @action
   getCount(perm, lvl) {
     const counts = perm.notification_levels;
     if (!counts) {
@@ -237,6 +275,7 @@ export default class ReachAndRightsTable extends Component {
     return count > 0 ? count : "";
   }
 
+  @action
   getTotalCount(level) {
     const data = this.effectiveData;
     if (!data?.category_notification_totals) {
@@ -249,10 +288,25 @@ export default class ReachAndRightsTable extends Component {
     return this.effectiveData?.category_notification_totals?.total_reach || 0;
   }
 
+  get debugData() {
+    const categoryId = this.categoryId;
+    const data = this.effectiveData;
+    const cacheEntry = this.reachAndRightsCache._cache.get(categoryId);
+    const cacheKeys = Array.from(this.reachAndRightsCache._cache.keys()).join(
+      ","
+    );
+    const localKeys = this.data ? Object.keys(this.data).join(",") : "null";
+    const effectiveKeys = data ? Object.keys(data).join(",") : "none";
+    const hasPerms = !!data?.group_permissions;
+
+    return `ID: ${categoryId} (${typeof categoryId}) | Lcl: ${typeof this.data} [${localKeys}] | Cch: ${!!cacheEntry} | L: ${this.loading} | D: ${hasPerms} | Eff: [${effectiveKeys}] | Keys: [${cacheKeys}]`;
+  }
+
   <template>
     {{#if this.shouldRender}}
       <div
         class="discourse-reach-and-rights-container view-{{this.viewType}}"
+        style={{@style}}
         {{didInsert this.fetchData}}
         {{didUpdate this.fetchData @categoryId}}
       >
@@ -264,7 +318,7 @@ export default class ReachAndRightsTable extends Component {
           <div class="error-placeholder">{{i18n
               "discourse_reach_and_rights.load_error"
             }}</div>
-        {{else if this.effectiveData}}
+        {{else if this.hasData}}
           {{#if this.showHeader}}
             <h3 class="discourse-reach-and-rights-title">
               {{this.localizedTableTitle}}
@@ -272,9 +326,7 @@ export default class ReachAndRightsTable extends Component {
           {{/if}}
 
           {{#if this.isShortView}}
-            <div
-              class="discourse-reach-and-rights-short-container cell"
-            >
+            <div class="discourse-reach-and-rights-short-container cell">
               {{#each this.processedPermissions as |perm|}}
                 <div class="permission-item cell">
                   <span class="group-name">{{perm.group_display_name}}</span>:
