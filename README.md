@@ -4,7 +4,6 @@ This plugin enables an infobox about configured permissions (who is allowed to c
 
 ## Features
 - **Hierarchical Table (Default)**: A modern, minimalist display showing only the highest permission level per group using color-coded badges.
-- **Classic Table (`classic`)**: A detailed matrix view showing See/Reply/Create status for each group.
 - **Compact View (`short`)**: A streamlined display grouping groups by permission level with icons.
 - **Join/Request Action Buttons**:
   - `user-plus` icon: Join groups that allow public admission.
@@ -12,6 +11,7 @@ This plugin enables an infobox about configured permissions (who is allowed to c
 - **Configurable Colors**: Admin-defined colors for permission level badges (Create, Reply, See).
 - **Interactive Links**: Group names link to group pages, and the category name in the title links to the category page.
 - **Detailed Notification Tracking**: Displays specific subscription counts (Watching, Tracking, Muted) using official Discourse icons.
+- **Reach & Notifications Metrics**: Pre-calculated metrics for category reach, including users in mailing list mode.
 - **Aggregate Summary Row**: Shows total actual user subscriptions for the entire category at the bottom of the table.
 - **Localization**: Full support for German and English, including localized automatic group names (e.g., "jeder", "Team").
 - **Automatic Detection**: Using `[reach-and-rights]` without a category ID inside a topic automatically detects the category from the topic.
@@ -79,6 +79,7 @@ This task will scan all categories and append the tag to the first post of the c
   {
     "category_id": 1,
     "category_name": "General",
+    "category_url": "/c/general/1",
     "group_permissions": [
       {
         "permission_type": 1,
@@ -91,7 +92,14 @@ This task will scan all categories and append the tag to the first post of the c
         "is_member": false,
         "group_url": "/g/admins"
       }
-    ]
+    ],
+    "category_notification_totals": {
+      "3": 5,
+      "4": 10
+    },
+    "reach_count": 100,
+    "watching_count": 25,
+    "watching_first_post_count": 45
   }
   ```
 

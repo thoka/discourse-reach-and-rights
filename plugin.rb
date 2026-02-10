@@ -44,6 +44,7 @@ after_initialize do
   require_relative "app/controllers/discourse_reach_and_rights/permissions_controller"
   require_relative "app/services/discourse_reach_and_rights/permissions_fetcher"
   require_relative "app/services/discourse_reach_and_rights/reach_calculator"
+  require_relative "app/services/discourse_reach_and_rights/stats_store"
   require_relative "app/jobs/scheduled/update_reach_stats"
 
   %i[category basic_category].each do |s|
@@ -54,7 +55,7 @@ after_initialize do
 
       # Der Fetcher sollte Request-Level Caching nutzen, um N+1 zu vermeiden
       result = DiscourseReachAndRights::PermissionsFetcher.call(category: object, guardian: scope)
-      stats = DiscourseReachAndRights::Stat.find_by(category_id: object.id)
+      stats = DiscourseReachAndRights::StatsStore.stats_for(object.id)
 
       {
         category_id: object.id,
@@ -62,11 +63,35 @@ after_initialize do
         category_url: object.url,
         group_permissions: result.permissions,
         category_notification_totals: result.category_notification_totals,
-        reach_count: stats&.reach_count || 0,
-        watching_count: stats&.watching_count || 0,
-        watching_first_post_count: stats&.watching_first_post_count || 0,
+        reach_count: stats&.[](:reach_count) || 0,
+        watching_count: stats&.[](:watching_count) || 0,
+        watching_first_post_count: stats&.[](:watching_first_post_count) || 0,
       }
     end
+  end
+
+  add_to_serializer(:site, :categories) do
+    cats = object.categories.map { |c| c.to_h }
+
+    if SiteSetting.discourse_reach_and_rights_enabled && scope&.user &&
+         scope.user.trust_level >= SiteSetting.discourse_reach_and_rights_min_trust_level
+      stats =
+        DiscourseReachAndRights::Stat.all.each_with_object({}) do |s, h|
+          h[s.category_id] = {
+            reach_count: s.reach_count,
+            watching_count: s.watching_count,
+            watching_first_post_count: s.watching_first_post_count,
+          }
+        end
+
+      cats.each do |c|
+        if stat = stats[c[:id]]
+          c[:reach_and_rights] = (c[:reach_and_rights] || {}).merge(stat)
+        end
+      end
+    end
+
+    cats
   end
 
   Discourse::Application.routes.prepend do

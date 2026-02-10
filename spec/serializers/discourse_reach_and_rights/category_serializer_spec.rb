@@ -17,7 +17,7 @@ describe BasicCategorySerializer do
       category_id: category.id,
       reach_count: 50,
       watching_count: 10,
-      watching_first_post_count: 20
+      watching_first_post_count: 20,
     )
 
     serializer = BasicCategorySerializer.new(category, scope: guardian, root: false)

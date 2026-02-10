@@ -58,8 +58,8 @@ module ::DiscourseReachAndRights
       watching_level = CategoryUser.notification_levels[:watching]
       muted_level = CategoryUser.notification_levels[:muted]
 
-      DB.query(
-        <<~SQL,
+      DB
+        .query(<<~SQL, watching_level: watching_level, muted_level: muted_level)
         SELECT cg.category_id, COUNT(DISTINCT u.id) as count
         FROM users u
         JOIN user_options uo ON uo.user_id = u.id
@@ -70,9 +70,7 @@ module ::DiscourseReachAndRights
            OR (uo.mailing_list_mode = true AND (cu.notification_level IS NULL OR cu.notification_level != :muted_level))
         GROUP BY cg.category_id
       SQL
-        watching_level: watching_level,
-        muted_level: muted_level,
-      ).each_with_object({}) { |r, h| h[r.category_id] = r.count }
+        .each_with_object({}) { |r, h| h[r.category_id] = r.count }
     end
 
     def calculate_watching_first_bulk(watching_counts)
@@ -82,8 +80,9 @@ module ::DiscourseReachAndRights
 
       # Counts for those specifically on "watching_first_post" who are NOT already in mailing list/watching
       results =
-        DB.query(
-          <<~SQL,
+        DB
+          .query(
+            <<~SQL,
         SELECT cg.category_id, COUNT(DISTINCT u.id) as count
         FROM users u
         JOIN user_options uo ON uo.user_id = u.id
@@ -95,10 +94,11 @@ module ::DiscourseReachAndRights
           AND NOT (cu.notification_level = :watching_level)
         GROUP BY cg.category_id
       SQL
-          first_post_level: first_post_level,
-          watching_level: watching_level,
-          muted_level: muted_level,
-        ).each_with_object({}) { |r, h| h[r.category_id] = r.count }
+            first_post_level: first_post_level,
+            watching_level: watching_level,
+            muted_level: muted_level,
+          )
+          .each_with_object({}) { |r, h| h[r.category_id] = r.count }
 
       # Combine with watching_counts
       watching_counts.each_with_object(results.dup) do |(c_id, count), h|

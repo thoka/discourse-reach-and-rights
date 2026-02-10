@@ -40,7 +40,14 @@ Discourse uses a multi-layered system for category notification levels:
     *   `3`: Watching
     *   `4`: Watching First Post
 
-## 6. Testing
+## 6. Reach Statistics (Background)
+*   **Performance**: To avoid heavy computations, reach metrics are calculated in bulk.
+*   **Mailing List Mode**: Users with `mailing_list_mode: true` are counted as "Watching" unless they have an explicit `muted` level for that category.
+*   **Hierarchy**: "Watching First Post" totals always include all users from the "Watching" pool, as they technically receive the first post as well.
+*   **Availability**: Stats are merged into the `categories` array in the `SiteSerializer` for global availability and injected into `BasicCategorySerializer` responses.
+*   **Updates**: Managed via `Jobs::UpdateReachStats` (Scheduled) and synchronized via `MessageBus` for active clients.
+
+## 7. Testing
 *   **System Specs:** Follow the Discourse development patterns for system tests.
     *   **Sessions:** To test anonymous states, use `using_session` or ensure `sign_out` is handled properly before visiting pages.
     *   **Assertions:** For AJAX-heavy UI, use `expect(page).to have_css()` as it includes built-in waiting logic.
