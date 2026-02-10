@@ -22,6 +22,25 @@ This plugin provides a dynamic info box for category permissions, integrated via
 - **CategoryGroup**: Primary source for mapping `category_id` -> `group_id` -> `permission_type` (1:Full, 2:Create/Reply, 3:Read).
 - **GroupCategoryNotificationDefault**: Baseline notification levels for groups.
 - **CategoryUser**: Individual user overrides for category notification levels.
+- **ReachAndRightsStat**: Stores pre-calculated reach and notification metrics per category.
+
+## Reach Statistics (Background Processing)
+To avoid expensive on-the-fly calculations (especially for mailing list mode users), reach metrics are pre-calculated and persisted.
+
+### Metrics
+1. **Reach**: Total unique users who have at least "Read" access to the category.
+2. **Watching**: Users receiving notifications for *all* posts. Includes:
+   - Users with explicit "Watching" level.
+   - Users in "Mailing List Mode" who have not muted the category.
+3. **Watching First Post**: Users receiving notifications for *new topics*. Includes:
+   - All users in the "Watching" group.
+   - Users with explicit "Watching First Post" level.
+
+### Persistence & Distribution
+- **Storage**: PostgreSQL table `reach_and_rights_stats`.
+- **Background Job**: `Jobs::UpdateReachStats` (Scheduled) runs periodically (hourly) to refresh all categories.
+- **Real-time Updates**: Changes are published via `MessageBus` to `/reach-and-rights/stats`.
+- **Serialization**: Included in `BasicCategorySerializer` to facilitate immediate availability on category lists and individual pages.
 
 ## Lessons Learned & Best Practices
 
