@@ -1,6 +1,7 @@
 de:
   site_settings:
     discourse_reach_and_rights_enabled: "Reach and Rights für Kategorien aktivieren."
+    discourse_reach_and_rights_debug_enabled: "Debugging-Informationen in der Oberfläche anzeigen."
     discourse_reach_and_rights_default_view: "Standardansicht für den Berechtigungs-Tag."
     discourse_reach_and_rights_color_create: "Farbe für das 'Erstellen'-Abzeichen (Hex)."
     discourse_reach_and_rights_color_reply: "Farbe für das 'Antworten'-Abzeichen (Hex)."
@@ -18,6 +19,26 @@ de:
     trust_level_2: "Vertrauensstufe 2"
     trust_level_3: "Vertrauensstufe 3"
     trust_level_4: "Vertrauensstufe 4"
+    append_to_categories:
+      scanning: "Suche nach Kategorien, die den Tag benötigen..."
+      skipping_topic: " übersprungen (kein Thema)"
+      skipping_post: " übersprungen (kein Beitrag)"
+      updating: "Aktualisiere %{name} (Thema %{id})"
+      done: "Fertig. %{count} Kategorien aktualisiert."
+    recalculate_stats:
+      recalculating: "Statistiken für Reichweite und Rechte werden neu berechnet..."
+      finished: "Neuberechnung abgeschlossen."
+      time_taken: "Benötigte Zeit: %{time} Sekunden"
+      updates_performed: "Folgende Aktualisierungen wurden durchgeführt:"
+      notifying_clients: "Clients werden über MessageBus benachrichtigt und der Server-Cache wird geleert..."
+      update_detail: "  - %{name}: Reichweite=%{reach}, Beobachtend=%{watching}, Beobachtend (erster Beitrag)=%{watching_first}"
+      no_updates: "Keine Änderungen. Statistiken sind bereits aktuell."
+      summary_title: "\nZusammenfassung aller Kategorien:"
+      category_header: "Kategorie"
+      reach_header: "Reichw."
+      watch_header: "Beob."
+      watch_first_header: "Beob. 1."
+      unknown_category: "Unbekannte Kategorie (ID: %{id})"
   plugins:
     discourse-reach-and-rights:
       title: "Reach and Rights"

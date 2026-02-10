@@ -14,6 +14,7 @@ module ::DiscourseReachAndRights
 
       # Get all categories to ensure we handle those with 0 stats
       category_ids = Category.pluck(:id)
+      stats = Stat.where(category_id: category_ids).index_by(&:category_id)
 
       updates = []
 
@@ -22,10 +23,24 @@ module ::DiscourseReachAndRights
         watching = watching_counts[c_id] || 0
         watching_first = watching_first_counts[c_id] || 0
 
-        stat = Stat.ensure_for(c_id)
+        stat = stats[c_id]
 
-        if stat.reach_count != reach || stat.watching_count != watching ||
-             stat.watching_first_post_count != watching_first
+        if stat.nil?
+          stat =
+            Stat.create!(
+              category_id: c_id,
+              reach_count: reach,
+              watching_count: watching,
+              watching_first_post_count: watching_first,
+            )
+          updates << {
+            category_id: c_id,
+            reach_count: reach,
+            watching_count: watching,
+            watching_first_post_count: watching_first,
+          }
+        elsif stat.reach_count != reach || stat.watching_count != watching ||
+              stat.watching_first_post_count != watching_first
           stat.update!(
             reach_count: reach,
             watching_count: watching,
@@ -41,17 +56,30 @@ module ::DiscourseReachAndRights
       end
 
       publish_updates(updates) if updates.any?
+      updates
     end
 
     private
 
     def calculate_reach_bulk
-      DB.query(<<~SQL).each_with_object({}) { |r, h| h[r.category_id] = r.count }
+      reach_counts = {}
+
+      # Restricted categories
+      DB.query(<<~SQL).each { |r| reach_counts[r.category_id] = r.count }
         SELECT cg.category_id, COUNT(DISTINCT gu.user_id) as count
         FROM category_groups cg
         JOIN group_users gu ON gu.group_id = cg.group_id
         GROUP BY cg.category_id
       SQL
+
+      # Public categories (those that are NOT read_restricted)
+      total_real_users = User.activated.not_staged.count
+      Category
+        .where(read_restricted: false)
+        .pluck(:id)
+        .each { |c_id| reach_counts[c_id] = total_real_users }
+
+      reach_counts
     end
 
     def calculate_watching_bulk

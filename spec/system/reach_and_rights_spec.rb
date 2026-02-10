@@ -22,7 +22,12 @@ RSpec.describe "Reach and Rights", type: :system do
     visit post.url
 
     expect(page).to have_css(".discourse-reach-and-rights-table", wait: 5)
-    expect(page).to have_content("Permissions in area \"#{category.name}\"")
+    expect(page).to have_content(
+      I18n.t(
+        "js.discourse_reach_and_rights.table_title",
+        category_name: category.name,
+      ),
+    )
   end
 
   it "renders category permissions when the old [show-permissions] tag is used" do
@@ -34,7 +39,12 @@ RSpec.describe "Reach and Rights", type: :system do
     expect(page).to have_css(".discourse-reach-and-rights-table", wait: 5)
     expect(page).to have_css(".discourse-reach-and-rights-title", wait: 5)
 
-    expect(page).to have_content("Permissions in area \"#{category.name}\"")
+    expect(page).to have_content(
+      I18n.t(
+        "js.discourse_reach_and_rights.table_title",
+        category_name: category.name,
+      ),
+    )
 
     within ".discourse-reach-and-rights-table" do
       expect(page).to have_content("My group 0")

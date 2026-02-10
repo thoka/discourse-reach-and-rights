@@ -1,6 +1,7 @@
 en:
   site_settings:
     discourse_reach_and_rights_enabled: "Enable reach and rights for categories."
+    discourse_reach_and_rights_debug_enabled: "Show debugging information in the UI."
     discourse_reach_and_rights_default_view: "Default view for the permissions tag."
     discourse_reach_and_rights_color_create: "Color for 'Create' permission badge (Hex)."
     discourse_reach_and_rights_color_reply: "Color for 'Reply' permission badge (Hex)."
@@ -18,6 +19,25 @@ en:
     trust_level_2: "trust level 2"
     trust_level_3: "trust level 3"
     trust_level_4: "trust level 4"
+    append_to_categories:
+      scanning: "Scanning categories..."
+      updating: "Updating category '%{name}' (Topic: %{id})"
+      skipping_topic: "Skipping %{name}: topic not found"
+      skipping_post: "Skipping %{name}: first post not found"
+      done: "Done! Updated %{count} category descriptions."
+    recalculate_stats:
+      recalculating: "Recalculating reach and rights statistics..."
+      finished: "Finished recalculating statistics."
+      time_taken: "Time taken: %{time}s"
+      updates_performed: "Updates performed:"
+      update_detail: "  - %{name}: Reach=%{reach}, Watching=%{watching}, Watching First=%{watching_first}"
+      no_updates: "No updates were performed (data already up to date)."
+      summary_title: "Current Statistics Summary:"
+      category_header: "Category"
+      reach_header: "Reach"
+      watch_header: "Watch"
+      watch_first_header: "Watch1st"
+      unknown_category: "Unknown (ID: %{id})"
   plugins:
     discourse-reach-and-rights:
       title: "Reach and Rights"

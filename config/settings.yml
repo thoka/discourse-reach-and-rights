@@ -2,6 +2,9 @@ discourse_reach_and_rights:
   discourse_reach_and_rights_enabled:
     default: false
     client: true
+  discourse_reach_and_rights_debug_enabled:
+    default: false
+    client: true
   discourse_reach_and_rights_default_view:
     default: "table"
     type: enum

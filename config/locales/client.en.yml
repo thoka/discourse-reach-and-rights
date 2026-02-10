@@ -12,6 +12,7 @@ en:
       missing_category: "Missing category ID for reach and rights."
       modal_title: "Reach and Rights"
       table_title: "Reach and Rights in %{category_name}"
+      debug_info_title: "Debug Information"
       permissions_header: "Permission"
       group_default: "Group Default"
       default: "Default"

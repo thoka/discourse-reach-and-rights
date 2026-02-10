@@ -181,8 +181,18 @@ export default class ReachAndRightsSummary extends Component {
             </div>
             {{dIcon "info-circle" class="details-icon"}}
           </a>
+
+          {{#if this.siteSettings.discourse_reach_and_rights_debug_enabled}}
+            <div class="reach-and-rights-debug-info">
+              <pre>{{this.debugData}}</pre>
+            </div>
+          {{/if}}
         {{/if}}
       </div>
     {{/if}}
   </template>
+
+  get debugData() {
+    return JSON.stringify(this.effectiveData, null, 2);
+  }
 }

@@ -17,7 +17,10 @@ export default class ReachAndRightsTable extends Component {
   @tracked loading = false;
   @tracked error = false;
   @tracked _element = null;
-  @tracked showHeader = false;
+
+  get showHeader() {
+    return this.args.showHeader !== "false" && this.args.showHeader !== false;
+  }
 
   _lastCategoryId = null;
 
@@ -270,7 +273,7 @@ export default class ReachAndRightsTable extends Component {
 
           {{#if this.isShortView}}
             <div
-              class="discourse-reach-and-rights-short-container cell view-short"
+              class="discourse-reach-and-rights-short-container cell"
             >
               {{#each this.processedPermissions as |perm|}}
                 <div class="permission-item cell">

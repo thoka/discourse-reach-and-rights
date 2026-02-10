@@ -3,9 +3,9 @@
 require "rails_helper"
 
 describe DiscourseReachAndRights::ReachCalculator do
-  fab!(:category) { Fabricate(:category) }
-  fab!(:group) { Fabricate(:group) }
-  fab!(:user) { Fabricate(:user) }
+  fab!(:category)
+  fab!(:group)
+  fab!(:user)
 
   before do
     category.permissions = { group.name => :readonly }
@@ -21,7 +21,7 @@ describe DiscourseReachAndRights::ReachCalculator do
   end
 
   describe "mailing list mode" do
-    fab!(:ml_user) { Fabricate(:user) }
+    fab!(:ml_user, :user)
 
     before do
       group.add(ml_user)
@@ -65,7 +65,7 @@ describe DiscourseReachAndRights::ReachCalculator do
   end
 
   describe "watching first post" do
-    fab!(:first_post_user) { Fabricate(:user) }
+    fab!(:first_post_user, :user)
 
     before do
       group.add(first_post_user)
@@ -82,6 +82,18 @@ describe DiscourseReachAndRights::ReachCalculator do
 
       expect(stat.watching_count).to eq(0)
       expect(stat.watching_first_post_count).to eq(1)
+    end
+  end
+
+  describe "public categories" do
+    fab!(:public_category) { Fabricate(:category, read_restricted: false) }
+    fab!(:another_user, :user)
+
+    it "includes all active users in reach for public categories" do
+      DiscourseReachAndRights::ReachCalculator.run
+      stat = DiscourseReachAndRights::Stat.find_by(category_id: public_category.id)
+
+      expect(stat.reach_count).to eq(User.activated.not_staged.count)
     end
   end
 end
