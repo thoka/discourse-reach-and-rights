@@ -51,12 +51,22 @@ export default {
               placeholder.setAttribute("data-category-id", parsedId);
               placeholder.dataset.categoryId = parsedId;
 
-              helper.renderGlimmer(placeholder, ReachAndRightsTable, {
-                categoryId: parsedId,
-                view,
-                showHeader,
-                style,
-              });
+              if (
+                view === "modal" ||
+                view === "summary" ||
+                style === "summary"
+              ) {
+                helper.renderGlimmer(placeholder, ReachAndRightsSummary, {
+                  categoryId: parsedId,
+                });
+              } else {
+                helper.renderGlimmer(placeholder, ReachAndRightsTable, {
+                  categoryId: parsedId,
+                  view,
+                  showHeader,
+                  style,
+                });
+              }
 
               placeholder.classList.remove("discourse-reach-and-rights");
               placeholder.classList.remove("discourse-visible-permissions");

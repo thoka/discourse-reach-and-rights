@@ -29,7 +29,6 @@ export default class ReachAndRightsSummary extends Component {
     if (!this || this.isDestroyed || this.isDestroying) {
       return null;
     }
-    // eslint-disable-next-line no-unused-expressions
     if (this.reachAndRightsCache) {
       this.reachAndRightsCache._cacheVersion;
     }
@@ -48,6 +47,7 @@ export default class ReachAndRightsSummary extends Component {
     const args = this.args || {};
     const outletArgs = args.outletArgs || {};
     const rawId =
+      args.categoryId ||
       args.category?.id ||
       outletArgs.category?.id ||
       args.topic?.category_id ||
@@ -157,8 +157,9 @@ export default class ReachAndRightsSummary extends Component {
   <template>
     {{#if this.shouldShow}}
       <button
-        class="discourse-reach-and-rights-summary"
+        class="discourse-reach-and-rights-summary btn permissions-summary-trigger"
         {{didInsert this.fetchData}}
+        {{didUpdate this.fetchData @categoryId}}
         {{didUpdate this.fetchData @outletArgs.category.id}}
         {{didUpdate this.fetchData @topic.category_id}}
         {{on "click" this.showDetails}}

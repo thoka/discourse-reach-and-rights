@@ -10,7 +10,6 @@ export default class ReachAndRightsDetails extends Component {
   constructor() {
     super(...arguments);
     if (this.siteSettings.discourse_reach_and_rights_debug_enabled) {
-      // eslint-disable-next-line no-console
       // console.log("ReachAndRightsDetails [Debug] Modal data:", JSON.stringify(this.data, null, 2));
     }
   }
@@ -37,14 +36,11 @@ export default class ReachAndRightsDetails extends Component {
     >
       <:body>
         <div data-category-id={{this.categoryId}}>
-          <pre>{{this.categoryId}}</pre>
-          {{!-- 
           <ReachAndRightsTable
-             @data={{this.data}} 
+            @data={{this.data}}
             @categoryId={{this.categoryId}}
             @showHeader="false"
           />
-          --}}
         </div>
       </:body>
     </DModal>

@@ -332,7 +332,7 @@
   margin: 0 0.5em;
   vertical-align: middle;
 
-  .permissions-summary-trigger.btn {
+  &.permissions-summary-trigger.btn {
     /* Dezent auffällig: subtle highlight color */
     background-color: var(--highlight-low);
     border: 1px solid var(--highlight-low-mid, var(--primary-low-mid));
@@ -340,8 +340,9 @@
     &:hover {
       background-color: var(--highlight-medium, var(--primary-low-mid));
     }
+  }
 
-    .notification-levels-container.compact {
+  .notification-levels-container.compact {
       display: inline-flex;
       gap: 0.5em;
       align-items: center;
@@ -357,10 +358,9 @@
       }
     }
 
-    .details-icon {
-      margin-left: 0.25em;
-      opacity: 0.7;
-    }
+  .details-icon {
+    margin-left: 0.25em;
+    opacity: 0.7;
   }
 
   .loading-placeholder {

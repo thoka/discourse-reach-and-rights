@@ -54,7 +54,6 @@ export default class ReachAndRightsTable extends Component {
 
     // Consume version for reactivity to cache updates
     if (this.reachAndRightsCache) {
-      // eslint-disable-next-line no-unused-expressions
       this.reachAndRightsCache._cacheVersion;
     }
 
