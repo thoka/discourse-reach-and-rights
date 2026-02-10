@@ -179,7 +179,21 @@ module DiscourseReachAndRights
           AND gu.user_id IN (SELECT user_id FROM AccessUsers)
         ),
         TargetUsers AS (
-          SELECT DISTINCT au.user_id, MAX(s.notification_level) as level
+          SELECT au.user_id, 
+                 CASE MAX(CASE s.notification_level
+                           WHEN 3 THEN 100 -- Watching (Highest priority)
+                           WHEN 4 THEN 80  -- Watching First Post
+                           WHEN 2 THEN 60  -- Tracking
+                           WHEN 1 THEN 40  -- Regular
+                           WHEN 0 THEN 20  -- Muted
+                           ELSE 0 END)
+                   WHEN 100 THEN 3
+                   WHEN 80  THEN 4
+                   WHEN 60  THEN 2
+                   WHEN 40  THEN 1
+                   WHEN 20  THEN 0
+                   ELSE NULL
+                 END as level
           FROM AccessUsers au
           LEFT JOIN AllSettings s ON s.user_id = au.user_id
           GROUP BY au.user_id

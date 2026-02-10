@@ -38,6 +38,9 @@ module ::DiscourseReachAndRights
 end
 
 require_relative "lib/discourse_reach_and_rights/engine"
+require_relative "lib/discourse_reach_and_rights/request_cache_middleware"
+
+Rails.configuration.middleware.use ::DiscourseReachAndRights::RequestCacheMiddleware
 
 after_initialize do
   require_relative "app/models/discourse_reach_and_rights/stat"

@@ -72,6 +72,41 @@ describe DiscourseReachAndRights::PermissionsFetcher do
     expect(total_counts[3]).to eq(1) # user_a still 1 in count 3
   end
 
+  it "prioritizes Watching (3) over Watching First Post (4) in totals" do
+    # Scenario: User belongs to two groups, one with Watching First Post default,
+    # another with Watching default.
+    user_prio = Fabricate(:user)
+    group_3 = Fabricate(:group, automatic: false)
+    group_4 = Fabricate(:group, automatic: false)
+    
+    group_3.add(user_prio)
+    group_4.add(user_prio)
+    
+    CategoryGroup.create!(category: category, group: group_3, permission_type: 1)
+    CategoryGroup.create!(category: category, group: group_4, permission_type: 1)
+    
+    # Group 3 defaults to Watching (3)
+    GroupCategoryNotificationDefault.create!(
+      group: group_3,
+      category: category,
+      notification_level: 3
+    )
+    # Group 4 defaults to Watching First Post (4)
+    GroupCategoryNotificationDefault.create!(
+      group: group_4,
+      category: category,
+      notification_level: 4
+    )
+    
+    result = described_class.call(category: category, guardian: Guardian.new(user_a))
+    totals = result.category_notification_totals
+    
+    # user_prio should be counted in level 3, NOT level 4
+    # (user_a is also in level 3 from before block)
+    expect(totals[3]).to eq(2) # user_a + user_prio
+    expect(totals[4]).to eq(0) 
+  end
+
   it "correctly identifies reach for public categories" do
     # Create a public category
     public_cat = Fabricate(:category, read_restricted: false)

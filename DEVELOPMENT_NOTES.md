@@ -31,7 +31,7 @@ Discourse uses a multi-layered system for category notification levels:
 *   **Precedence & Aggregation:** To calculate "real" notification numbers across the entire category ("Unique Reach"), we use a SQL Common Table Expression (CTE) approach:
     1.  **Access Population**: Identify everyone who can see the category (via group memberships or public access).
     2.  **Notification Inputs**: Gather all `CategoryUser` overrides and `GroupCategoryNotificationDefault` defaults for that population.
-    3.  **Deduplication**: Use `MAX(notification_level) GROUP BY user_id` to select exactly one "winning" level per active user.
+    3.  **Deduplication**: Use a weighted priority to select exactly one "winning" level per active user. **Note**: `Watching` (3) is prioritized over `Watching First Post` (4) because it represents a higher level of engagement (ALL posts vs. only the first).
     4.  **Count**: Group the resulting unique users by their winning level. This prevents inflated numbers for users in multiple groups.
 *   **Levels:**
     *   `0`: Muted
