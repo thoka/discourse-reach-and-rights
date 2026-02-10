@@ -23,10 +23,7 @@ RSpec.describe "Reach and Rights", type: :system do
 
     expect(page).to have_css(".discourse-reach-and-rights-table", wait: 5)
     expect(page).to have_content(
-      I18n.t(
-        "js.discourse_reach_and_rights.table_title",
-        category_name: category.name,
-      ),
+      I18n.t("js.discourse_reach_and_rights.table_title", category_name: category.name),
     )
   end
 
@@ -40,10 +37,7 @@ RSpec.describe "Reach and Rights", type: :system do
     expect(page).to have_css(".discourse-reach-and-rights-title", wait: 5)
 
     expect(page).to have_content(
-      I18n.t(
-        "js.discourse_reach_and_rights.table_title",
-        category_name: category.name,
-      ),
+      I18n.t("js.discourse_reach_and_rights.table_title", category_name: category.name),
     )
 
     within ".discourse-reach-and-rights-table" do
