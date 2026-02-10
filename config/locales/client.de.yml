@@ -3,14 +3,14 @@ de:
     admin:
       site_settings:
         categories:
-          discourse_visible_permissions: "Discourse Visible Permissions"
+          discourse_reach_and_rights: "Discourse Visible Permissions"
   js:
-    discourse_visible_permissions:
-      loading: "Lade Kategorie-Berechtigungen..."
-      load_error: "Kategorie-Berechtigungen konnten nicht geladen werden."
-      missing_category: "Fehlende Kategorie-ID für sichtbare Berechtigungen."
-      modal_title: "Kategorie-Berechtigungen"
-      table_title: "Berechtigungen für %{category_name}"
+    discourse_reach_and_rights:
+      loading: "Lade Reach and Rights..."
+      load_error: "Reach and Rights konnten nicht geladen werden."
+      missing_category: "Fehlende Kategorie-ID für Reach and Rights."
+      modal_title: "Reach and Rights"
+      table_title: "Rechte in %{category_name}"
       permissions_header: "Berechtigung"
       group_default: "Gruppen-Standard"
       default: "Standard"

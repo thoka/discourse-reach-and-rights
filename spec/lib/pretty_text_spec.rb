@@ -9,7 +9,7 @@ RSpec.describe PrettyText do
     cooked = PrettyText.cook("[show-permissions category=5]")
 
     expect(cooked).to match_html(
-      "<p><span class=\"discourse-visible-permissions\" data-category=\"5\"></span></p>",
+      "<p><span class=\"discourse-reach-and-rights\" data-category=\"5\"></span></p>",
     )
   end
 end

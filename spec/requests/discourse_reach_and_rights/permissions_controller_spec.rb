@@ -2,7 +2,7 @@
 
 require File.expand_path("../../../../../spec/rails_helper", __dir__)
 
-RSpec.describe DiscourseVisiblePermissions::PermissionsController do
+RSpec.describe DiscourseReachAndRights::PermissionsController do
   before { enable_current_plugin }
 
   fab!(:group)
@@ -11,13 +11,13 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
   fab!(:user)
 
   before do
-    SiteSetting.discourse_visible_permissions_enabled = true
+    SiteSetting.discourse_reach_and_rights_enabled = true
     category.set_permissions(group.name => :create_post)
     category.save!
   end
 
   it "requires login" do
-    get "/c/#{category.id}/permissions", xhr: true
+    get "/c/#{category.id}/reach-and-rights", xhr: true
     expect(response.status).to eq(403)
   end
 
@@ -25,7 +25,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
     sign_in(user)
     group.add(user)
 
-    get "/c/#{category.id}/permissions", xhr: true
+    get "/c/#{category.id}/reach-and-rights", xhr: true
 
     expect(response.status).to eq(200)
     json = response.parsed_body
@@ -48,7 +48,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
     category.save!
     category.update!(read_restricted: false) # But publicly visible
 
-    get "/c/#{category.id}/permissions", xhr: true
+    get "/c/#{category.id}/reach-and-rights", xhr: true
 
     expect(response.status).to eq(200)
     json = response.parsed_body
@@ -68,7 +68,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
     sign_in(user)
     group.update!(public_admission: false, allow_membership_requests: false)
 
-    get "/c/#{private_category.id}/permissions", xhr: true
+    get "/c/#{private_category.id}/reach-and-rights", xhr: true
 
     expect(response.status).to eq(404)
   end
@@ -77,7 +77,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
     sign_in(user)
     group.update!(public_admission: true)
 
-    get "/c/#{private_category.id}/permissions", xhr: true
+    get "/c/#{private_category.id}/reach-and-rights", xhr: true
 
     expect(response.status).to eq(200)
     json = response.parsed_body
@@ -86,17 +86,17 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
   end
 
   it "respects the min_trust_level setting" do
-    SiteSetting.discourse_visible_permissions_min_trust_level = 1
+    SiteSetting.discourse_reach_and_rights_min_trust_level = 1
     user.update!(trust_level: 0)
     group.add(user)
     sign_in(user)
 
-    get "/c/#{category.id}/permissions", xhr: true
+    get "/c/#{category.id}/reach-and-rights", xhr: true
 
     expect(response.status).to eq(403)
 
     user.update!(trust_level: 1)
-    get "/c/#{category.id}/permissions", xhr: true
+    get "/c/#{category.id}/reach-and-rights", xhr: true
     expect(response.status).to eq(200)
   end
 
@@ -109,7 +109,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
     category.save!
     category.update!(read_restricted: false)
 
-    get "/c/#{category.id}/permissions", xhr: true
+    get "/c/#{category.id}/reach-and-rights", xhr: true
 
     expect(response.status).to eq(200)
     json = response.parsed_body

@@ -1,8 +1,8 @@
-discourse_visible_permissions:
-  discourse_visible_permissions_enabled:
+discourse_reach_and_rights:
+  discourse_reach_and_rights_enabled:
     default: false
     client: true
-  discourse_visible_permissions_default_view:
+  discourse_reach_and_rights_default_view:
     default: "table"
     type: enum
     client: true
@@ -10,18 +10,18 @@ discourse_visible_permissions:
       - table
       - classic
       - short
-  discourse_visible_permissions_color_create:
+  discourse_reach_and_rights_color_create:
     default: "#3498db"
     client: true
-  discourse_visible_permissions_color_reply:
+  discourse_reach_and_rights_color_reply:
     default: "#2ecc71"
     client: true
-  discourse_visible_permissions_color_see:
+  discourse_reach_and_rights_color_see:
     default: "#f1c40f"
     client: true
-  discourse_visible_permissions_min_trust_level:
+  discourse_reach_and_rights_min_trust_level:
     default: 0
     client: true
-  discourse_visible_permissions_cache_ttl_minutes:
+  discourse_reach_and_rights_cache_ttl_minutes:
     default: 30
     client: false

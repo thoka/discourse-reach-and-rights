@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DiscourseVisiblePermissions
+module DiscourseReachAndRights
   class PermissionsFetcher
     include Service::Base
 
@@ -19,8 +19,8 @@ module DiscourseVisiblePermissions
 
       # 2. Cache expensive calculations per category
       # Invalidate if category or its groups/notifications change
-      cache_key = "visible-permissions:cat-data:#{category.id}:#{category.updated_at.to_i}"
-      ttl = SiteSetting.discourse_visible_permissions_cache_ttl_minutes
+      cache_key = "reach-and-rights:cat-data:#{category.id}:#{category.updated_at.to_i}"
+      ttl = SiteSetting.discourse_reach_and_rights_cache_ttl_minutes
 
       fetch_data =
         proc do
@@ -225,7 +225,7 @@ module DiscourseVisiblePermissions
       return full_name if full_name.present?
 
       I18n.t(
-        "discourse_visible_permissions.#{name}",
+        "discourse_reach_and_rights.#{name}",
         default: ["groups.default_names.#{name}".to_sym, name.humanize],
       )
     end

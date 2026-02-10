@@ -1,13 +1,13 @@
 de:
   site_settings:
-    discourse_visible_permissions_enabled: "Sichtbare Berechtigungen für Kategorien aktivieren."
-    discourse_visible_permissions_default_view: "Standardansicht für den Berechtigungs-Tag."
-    discourse_visible_permissions_color_create: "Farbe für das 'Erstellen'-Abzeichen (Hex)."
-    discourse_visible_permissions_color_reply: "Farbe für das 'Antworten'-Abzeichen (Hex)."
-    discourse_visible_permissions_color_see: "Farbe für das 'Sehen'-Abzeichen (Hex)."
-    discourse_visible_permissions_min_trust_level: "Mindest-Vertrauensstufe, um den Berechtigungs-Tag zu sehen."
-    discourse_visible_permissions_cache_ttl_minutes: "Dauer in Minuten, für die Berechnungen zwischengespeichert werden (0 zum Deaktivieren)."
-  discourse_visible_permissions:
+    discourse_reach_and_rights_enabled: "Reach and Rights für Kategorien aktivieren."
+    discourse_reach_and_rights_default_view: "Standardansicht für den Berechtigungs-Tag."
+    discourse_reach_and_rights_color_create: "Farbe für das 'Erstellen'-Abzeichen (Hex)."
+    discourse_reach_and_rights_color_reply: "Farbe für das 'Antworten'-Abzeichen (Hex)."
+    discourse_reach_and_rights_color_see: "Farbe für das 'Sehen'-Abzeichen (Hex)."
+    discourse_reach_and_rights_min_trust_level: "Mindest-Vertrauensstufe, um den Berechtigungs-Tag zu sehen."
+    discourse_reach_and_rights_cache_ttl_minutes: "Dauer in Minuten, für die Berechnungen zwischengespeichert werden (0 zum Deaktivieren)."
+  discourse_reach_and_rights:
     everyone: "jeder"
     logged_in: "angemeldete Benutzer"
     admins: "Admins"

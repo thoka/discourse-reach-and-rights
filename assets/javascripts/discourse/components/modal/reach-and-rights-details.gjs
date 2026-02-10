@@ -1,9 +1,9 @@
 import Component from "@glimmer/component";
 import DModal from "discourse/components/d-modal";
 import { i18n } from "discourse-i18n";
-import VisiblePermissionsTable from "../visible-permissions/table";
+import ReachAndRightsTable from "../reach-and-rights/table";
 
-export default class VisiblePermissionsDetails extends Component {
+export default class ReachAndRightsDetails extends Component {
   get data() {
     return this.args.model.data;
   }
@@ -13,7 +13,7 @@ export default class VisiblePermissionsDetails extends Component {
   }
 
   get modalTitle() {
-    return i18n("js.discourse_visible_permissions.table_title", {
+    return i18n("js.discourse_reach_and_rights.table_title", {
       category_name: this.data?.category_name || "",
     });
   }
@@ -22,14 +22,14 @@ export default class VisiblePermissionsDetails extends Component {
     <DModal
       @title={{this.modalTitle}}
       @closeModal={{@closeModal}}
-      class="visible-permissions-details-modal"
+      class="reach-and-rights-details-modal"
     >
       <:body>
         <div data-category-id={{this.categoryId}}>
-          <VisiblePermissionsTable
+          <ReachAndRightsTable
             @data={{this.data}}
             @categoryId={{this.categoryId}}
-            @showHeader=false
+            @showHeader="false"
           />
         </div>
       </:body>

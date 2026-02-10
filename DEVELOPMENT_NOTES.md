@@ -1,4 +1,4 @@
-# Development Notes: Discourse Visible Permissions
+# Development Notes: Discourse Reach and Rights
 
 This document summarizes technical insights, pitfalls, and useful information gathered during the development of this plugin.
 

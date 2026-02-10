@@ -3,12 +3,12 @@ en:
     admin:
       site_settings:
         categories:
-          discourse_visible_permissions: "Discourse Visible Permissions"
+          discourse_reach_and_rights: "Discourse Visible Permissions"
   js:
-    discourse_visible_permissions:
+    discourse_reach_and_rights:
       loading: "Loading category permissions..."
       load_error: "Could not load category permissions."
-      missing_category: "Missing category ID for visible permissions."
+      missing_category: "Missing category ID for reach and rights."
       modal_title: "Category Permissions"
       table_title: "Permissions for %{category_name}"
       permissions_header: "Permission"

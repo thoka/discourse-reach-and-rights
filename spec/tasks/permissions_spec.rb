@@ -3,17 +3,17 @@
 require File.expand_path("../../../../spec/rails_helper", __dir__)
 require "rake"
 
-describe "discourse_visible_permissions rake tasks" do
+describe "discourse_reach_and_rights rake tasks" do
   fab!(:admin)
 
   before do
-    Rake.application.rake_require "tasks/permissions",
-                                  ["#{Rails.root}/plugins/discourse-visible-permissions/lib"]
+    Rake.application.rake_require "tasks/reach-and-rights",
+                                  ["#{Rails.root}/plugins/discourse-reach-and-rights/lib"]
     Rake::Task.define_task(:environment)
   end
 
   describe "append_to_categories" do
-    let(:rake_task) { Rake::Task["discourse_visible_permissions:append_to_categories"] }
+    let(:rake_task) { Rake::Task["discourse_reach_and_rights:append_to_categories"] }
 
     it "appends the tag to the first post of the category topic" do
       category = Category.create!(name: "Rake Category 1", user: admin)

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-module DiscourseVisiblePermissions
+module DiscourseReachAndRights
   class PermissionsController < ::ApplicationController
-    requires_plugin DiscourseVisiblePermissions::PLUGIN_NAME
+    requires_plugin DiscourseReachAndRights::PLUGIN_NAME
     requires_login
 
     def show
-      raise Discourse::NotFound unless SiteSetting.discourse_visible_permissions_enabled
-      if current_user.trust_level < SiteSetting.discourse_visible_permissions_min_trust_level
+      raise Discourse::NotFound unless SiteSetting.discourse_reach_and_rights_enabled
+      if current_user.trust_level < SiteSetting.discourse_reach_and_rights_min_trust_level
         raise Discourse::InvalidAccess
       end
 

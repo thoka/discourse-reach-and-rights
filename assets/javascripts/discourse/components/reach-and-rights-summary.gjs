@@ -7,17 +7,17 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
 import dIcon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
-import VisiblePermissionsDetails from "./modal/visible-permissions-details";
+import ReachAndRightsDetails from "./modal/reach-and-rights-details";
 
-export default class VisiblePermissionsSummary extends Component {
+export default class ReachAndRightsSummary extends Component {
   @service modal;
   @service siteSettings;
   @service currentUser;
-  @service visiblePermissionsCache;
+  @service reachAndRightsCache;
 
   @tracked data = null;
   @tracked loading = false;
-  
+
   _lastCategoryId = null;
 
   get categoryId() {
@@ -33,26 +33,44 @@ export default class VisiblePermissionsSummary extends Component {
   }
 
   get shouldShow() {
-    if (!this.siteSettings.discourse_visible_permissions_enabled) {return false;}
-    if (!this.currentUser) {return false;}
-    if (this.currentUser.trust_level < this.siteSettings.discourse_visible_permissions_min_trust_level) {return false;}
+    if (!this.siteSettings.discourse_reach_and_rights_enabled) {
+      return false;
+    }
+    if (!this.currentUser) {
+      return false;
+    }
+    if (
+      this.currentUser.trust_level <
+      this.siteSettings.discourse_reach_and_rights_min_trust_level
+    ) {
+      return false;
+    }
     return !!this.categoryId;
   }
 
   get notificationTotals() {
-    if (!this.data?.category_notification_totals) {return [];}
-    return [3, 4, 2, 0].map((lvl) => {
-      const count = this.data.category_notification_totals[lvl] || 0;
-      if (count > 0) {
-        let icon = "bell";
-        if (lvl === 3) {icon = "d-watching";}
-        else if (lvl === 4) {icon = "d-watching-first";}
-        else if (lvl === 2) {icon = "d-tracking";}
-        else if (lvl === 0) {icon = "d-muted";}
-        return { count, icon };
-      }
-      return null;
-    }).filter(Boolean);
+    if (!this.data?.category_notification_totals) {
+      return [];
+    }
+    return [3, 4, 2, 0]
+      .map((lvl) => {
+        const count = this.data.category_notification_totals[lvl] || 0;
+        if (count > 0) {
+          let icon = "bell";
+          if (lvl === 3) {
+            icon = "d-watching";
+          } else if (lvl === 4) {
+            icon = "d-watching-first";
+          } else if (lvl === 2) {
+            icon = "d-tracking";
+          } else if (lvl === 0) {
+            icon = "d-muted";
+          }
+          return { count, icon };
+        }
+        return null;
+      })
+      .filter(Boolean);
   }
 
   @action
@@ -64,15 +82,18 @@ export default class VisiblePermissionsSummary extends Component {
     this._lastCategoryId = categoryId;
 
     const category = this.args.category || this.args.outletArgs?.category;
-    if (category?.visible_permissions) {
-      this.visiblePermissionsCache.setPermissions(categoryId, category.visible_permissions);
-      this.data = category.visible_permissions;
+    if (category?.reach_and_rights) {
+      this.reachAndRightsCache.setPermissions(
+        categoryId,
+        category.reach_and_rights
+      );
+      this.data = category.reach_and_rights;
       return;
     }
 
     this.loading = true;
     try {
-      this.data = await this.visiblePermissionsCache.getPermissions(categoryId);
+      this.data = await this.reachAndRightsCache.getPermissions(categoryId);
     } catch {
       this.data = null;
     } finally {
@@ -86,11 +107,14 @@ export default class VisiblePermissionsSummary extends Component {
     if (this.data) {
       const categoryId = this.categoryId;
       // eslint-disable-next-line no-console
-      console.log("VisiblePermissionsSummary Debug: opening modal with categoryId", categoryId);
-      this.modal.show(VisiblePermissionsDetails, {
-        model: { 
-          data: this.data, 
-          categoryId 
+      console.log(
+        "ReachAndRightsSummary Debug: opening modal with categoryId",
+        categoryId
+      );
+      this.modal.show(ReachAndRightsDetails, {
+        model: {
+          data: this.data,
+          categoryId,
         },
       });
     }
@@ -98,23 +122,31 @@ export default class VisiblePermissionsSummary extends Component {
 
   <template>
     {{#if this.shouldShow}}
-      <div 
-        class="discourse-visible-permissions-summary"
+      <div
+        class="discourse-reach-and-rights-summary"
         {{didInsert this.fetchData}}
         {{didUpdate this.fetchData @outletArgs.category.id}}
         {{didUpdate this.fetchData @topic.category_id}}
       >
         {{#if this.loading}}
-          <span class="loading-placeholder">{{i18n "discourse_visible_permissions.loading"}}</span>
+          <span class="loading-placeholder">{{i18n
+              "discourse_reach_and_rights.loading"
+            }}</span>
         {{else if this.data}}
-          <a href {{on "click" this.showDetails}} class="permissions-summary-trigger">
+          <a
+            href
+            {{on "click" this.showDetails}}
+            class="permissions-summary-trigger"
+          >
             <span
               class="sum-symbol"
-              title={{i18n "js.discourse_visible_permissions.potential_notifications"}}
+              title={{i18n
+                "js.discourse_reach_and_rights.potential_notifications"
+              }}
             > &Sigma;</span>
-            <!-- 
-            <span class="summary-label">{{i18n "discourse_visible_permissions.potential_notifications"}}:</span>
-            -->
+            {{!-- 
+            <span class="summary-label">{{i18n "discourse_reach_and_rights.potential_notifications"}}:</span>
+            --}}
             <div class="notification-levels-container compact">
               {{#each this.notificationTotals as |lvl|}}
                 <span class="notification-level-item">

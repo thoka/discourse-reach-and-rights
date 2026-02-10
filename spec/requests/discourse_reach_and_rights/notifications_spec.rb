@@ -2,7 +2,7 @@
 
 require File.expand_path("../../../../../spec/rails_helper", __dir__)
 
-RSpec.describe DiscourseVisiblePermissions::PermissionsController do
+RSpec.describe DiscourseReachAndRights::PermissionsController do
   before { enable_current_plugin }
 
   fab!(:group)
@@ -11,7 +11,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
   fab!(:user_in_group, :user)
 
   before do
-    SiteSetting.discourse_visible_permissions_enabled = true
+    SiteSetting.discourse_reach_and_rights_enabled = true
     user.update!(admin: true)
     group.add(user_in_group)
     sign_in(user)
@@ -25,7 +25,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
         notification_level: NotificationLevels.all[:watching],
       )
 
-      get "/c/#{category.id}/permissions", xhr: true
+      get "/c/#{category.id}/reach-and-rights", xhr: true
 
       expect(response.status).to eq(200)
       json = response.parsed_body
@@ -47,7 +47,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
         notification_level: NotificationLevels.all[:watching],
       )
 
-      get "/c/#{category.id}/permissions", xhr: true
+      get "/c/#{category.id}/reach-and-rights", xhr: true
 
       expect(response.status).to eq(200)
       json = response.parsed_body
@@ -68,7 +68,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
       another_user = Fabricate(:user)
       group.add(another_user)
 
-      get "/c/#{category.id}/permissions", xhr: true
+      get "/c/#{category.id}/reach-and-rights", xhr: true
 
       json = response.parsed_body
       group_perm = json["group_permissions"].find { |p| p["group_id"] == group.id }
@@ -91,7 +91,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
         notification_level: NotificationLevels.all[:muted],
       )
 
-      get "/c/#{category.id}/permissions", xhr: true
+      get "/c/#{category.id}/reach-and-rights", xhr: true
 
       json = response.parsed_body
       group_perm = json["group_permissions"].find { |p| p["group_id"] == group.id }
@@ -117,7 +117,7 @@ RSpec.describe DiscourseVisiblePermissions::PermissionsController do
         notification_level: NotificationLevels.all[:tracking],
       )
 
-      get "/c/#{category.id}/permissions", xhr: true
+      get "/c/#{category.id}/reach-and-rights", xhr: true
 
       json = response.parsed_body
       totals = json["category_notification_totals"]

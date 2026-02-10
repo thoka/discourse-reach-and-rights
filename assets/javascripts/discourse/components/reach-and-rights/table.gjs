@@ -8,10 +8,10 @@ import { htmlSafe } from "@ember/template";
 import dIcon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 
-export default class VisiblePermissionsTable extends Component {
+export default class ReachAndRightsTable extends Component {
   @service siteSettings;
   @service currentUser;
-  @service visiblePermissionsCache;
+  @service reachAndRightsCache;
 
   @tracked data = null;
   @tracked loading = false;
@@ -39,7 +39,7 @@ export default class VisiblePermissionsTable extends Component {
   get viewType() {
     return (
       this.args.view ||
-      this.siteSettings.discourse_visible_permissions_default_view ||
+      this.siteSettings.discourse_reach_and_rights_default_view ||
       "table"
     );
   }
@@ -52,7 +52,7 @@ export default class VisiblePermissionsTable extends Component {
     if (!this.data) {
       return "";
     }
-    return i18n("js.discourse_visible_permissions.table_title", {
+    return i18n("js.discourse_reach_and_rights.table_title", {
       category_name: this.data.category_name || "Unknown",
     });
   }
@@ -95,12 +95,17 @@ export default class VisiblePermissionsTable extends Component {
 
     const topic = this.args.topic || this.args.model?.topic;
     const modelCategory = this.args.category || this.args.model?.category;
-    
-    const categorySource = [modelCategory, topic?.category].find(c => c?.id === categoryId && c?.visible_permissions);
-    
-    if (categorySource?.visible_permissions) {
-      this.visiblePermissionsCache.setPermissions(categoryId, categorySource.visible_permissions);
-      this.data = categorySource.visible_permissions;
+
+    const categorySource = [modelCategory, topic?.category].find(
+      (c) => c?.id === categoryId && c?.reach_and_rights
+    );
+
+    if (categorySource?.reach_and_rights) {
+      this.reachAndRightsCache.setPermissions(
+        categoryId,
+        categorySource.reach_and_rights
+      );
+      this.data = categorySource.reach_and_rights;
       this._lastCategoryId = categoryId;
       return;
     }
@@ -108,10 +113,10 @@ export default class VisiblePermissionsTable extends Component {
     this.loading = true;
     this.error = false;
     try {
-      this.data = await this.visiblePermissionsCache.getPermissions(categoryId);
+      this.data = await this.reachAndRightsCache.getPermissions(categoryId);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error("VisiblePermissionsTable Error:", e);
+      console.error("ReachAndRightsTable Error:", e);
       this.data = null;
       this.error = true;
     } finally {
@@ -128,16 +133,15 @@ export default class VisiblePermissionsTable extends Component {
       let permIcon, permColor, permTitle;
       if (perm.permission_type === 1) {
         permIcon = "plus";
-        permColor =
-          this.siteSettings.discourse_visible_permissions_color_create;
+        permColor = this.siteSettings.discourse_reach_and_rights_color_create;
         permTitle = i18n("js.category.permissions.create");
       } else if (perm.permission_type === 2) {
         permIcon = "reply";
-        permColor = this.siteSettings.discourse_visible_permissions_color_reply;
+        permColor = this.siteSettings.discourse_reach_and_rights_color_reply;
         permTitle = i18n("js.category.permissions.reply");
       } else if (perm.permission_type === 3) {
         permIcon = "eye";
-        permColor = this.siteSettings.discourse_visible_permissions_color_see;
+        permColor = this.siteSettings.discourse_reach_and_rights_color_see;
         permTitle = i18n("js.category.permissions.see");
       }
 
@@ -187,7 +191,7 @@ export default class VisiblePermissionsTable extends Component {
             : lvl === 1
               ? "regular"
               : "muted";
-    return i18n(`js.discourse_visible_permissions.notification_levels.${key}`);
+    return i18n(`js.discourse_reach_and_rights.notification_levels.${key}`);
   }
 
   getNotificationTitleByName(level) {
@@ -208,7 +212,6 @@ export default class VisiblePermissionsTable extends Component {
     }
     return "";
   }
-
 
   getCount(perm, lvl) {
     const counts = perm.notification_levels;
@@ -234,28 +237,28 @@ export default class VisiblePermissionsTable extends Component {
   <template>
     {{#if this.shouldRender}}
       <div
-        class="discourse-visible-permissions-container view-{{this.viewType}}"
+        class="discourse-reach-and-rights-container view-{{this.viewType}}"
         {{didInsert this.fetchData}}
         {{didUpdate this.fetchData @categoryId}}
       >
         {{#if this.loading}}
           <div class="loading-placeholder">{{i18n
-              "discourse_visible_permissions.loading"
+              "discourse_reach_and_rights.loading"
             }}</div>
         {{else if this.error}}
           <div class="error-placeholder">{{i18n
-              "discourse_visible_permissions.load_error"
+              "discourse_reach_and_rights.load_error"
             }}</div>
         {{else if this.data}}
           {{#if this.showHeader}}
-          <h3 class="discourse-visible-permissions-title">
-            {{this.localizedTableTitle}}
-          </h3>
+            <h3 class="discourse-reach-and-rights-title">
+              {{this.localizedTableTitle}}
+            </h3>
           {{/if}}
 
           {{#if this.isShortView}}
             <div
-              class="discourse-visible-permissions-short-container cell view-short"
+              class="discourse-reach-and-rights-short-container cell view-short"
             >
               {{#each this.processedPermissions as |perm|}}
                 <div class="permission-item cell">
@@ -271,20 +274,20 @@ export default class VisiblePermissionsTable extends Component {
               {{/each}}
             </div>
           {{else}}
-            <table class="discourse-visible-permissions-table modern-view">
+            <table class="discourse-reach-and-rights-table modern-view">
               <thead>
                 <tr>
                   <th colspan="3">Berechtigungen</th>
                   <th colspan="5">Benachrichtigungen</th>
-                </tr>  
+                </tr>
                 <tr>
                   <th class="group-name-header">{{i18n
-                      "js.discourse_visible_permissions.group_name"
+                      "js.discourse_reach_and_rights.group_name"
                     }}</th>
                   <th
                     class="users-count-header"
                     title={{i18n
-                      "js.discourse_visible_permissions.group_users_count"
+                      "js.discourse_reach_and_rights.group_users_count"
                     }}
                   >{{dIcon "users"}}</th>
                   <th class="permission-badge-header"></th>
@@ -327,7 +330,7 @@ export default class VisiblePermissionsTable extends Component {
                         <a
                           href={{perm.group_url}}
                           class="group-action-link join"
-                          title={{i18n "js.discourse_visible_permissions.join"}}
+                          title={{i18n "js.discourse_reach_and_rights.join"}}
                         >
                           {{dIcon "plus"}}
                         </a>
@@ -335,9 +338,7 @@ export default class VisiblePermissionsTable extends Component {
                         <a
                           href={{perm.group_url}}
                           class="group-action-link request"
-                          title={{i18n
-                            "js.discourse_visible_permissions.request"
-                          }}
+                          title={{i18n "js.discourse_reach_and_rights.request"}}
                         >
                           {{dIcon "paper-plane"}}
                         </a>
@@ -386,7 +387,7 @@ export default class VisiblePermissionsTable extends Component {
               <tfoot>
                 <tr class="summary-row">
                   <td class="group-name-cell cell">
-                    {{i18n "js.discourse_visible_permissions.total"}}
+                    {{i18n "js.discourse_reach_and_rights.total"}}
                   </td>
                   <td class="users-count-cell num" style="text-align: center;">
                     {{this.totalReach}}

@@ -1,5 +1,5 @@
 /* Discourse Visible Permissions Styles */
-.discourse-visible-permissions-container {
+.discourse-reach-and-rights-container {
   display: inline-block !important;
   background: var(--secondary);
   color: var(--primary);
@@ -63,7 +63,7 @@
     margin: 1em 0;
     min-width: 300px;
 
-    .discourse-visible-permissions-table {
+    .discourse-reach-and-rights-table {
       width: 100%;
       border-collapse: collapse;
 
@@ -132,6 +132,7 @@
             min-width: 15em;
             text-align: left;
             font-weight: bold;
+
             // display: flex;
             align-items: center;
             gap: 8px;
@@ -226,6 +227,7 @@
           }
         }
       }
+
       tfoot {
         border-top: 2px solid var(--primary-low);
         font-weight: bold;
@@ -249,7 +251,7 @@
     border-radius: 8px;
     margin: 0.5em 0;
 
-    .discourse-visible-permissions-short-container {
+    .discourse-reach-and-rights-short-container {
       display: flex;
       flex-direction: column;
       gap: 0.25em;
@@ -298,14 +300,14 @@
   }
 }
 
-.discourse-visible-permissions-title {
+.discourse-reach-and-rights-title {
   margin-bottom: 0.5rem;
   font-size: var(--font-up-1);
   font-weight: bold;
 }
 
 /* Composer Summary Styles */
-.discourse-visible-permissions-summary {
+.discourse-reach-and-rights-summary {
   margin-top: 5px;
   font-size: 0.9em;
 
@@ -379,12 +381,12 @@
   }
 }
 
-.d-modal.discourse-visible-permissions-details-modal {
+.d-modal.discourse-reach-and-rights-details-modal {
   .modal-inner-container {
     max-width: 600px;
   }
 
-  .discourse-visible-permissions-container {
+  .discourse-reach-and-rights-container {
     width: 100%;
     margin: 0;
     border: none;
@@ -399,7 +401,7 @@
 }
 
 /* Summary Styles */
-.discourse-visible-permissions-summary {
+.discourse-reach-and-rights-summary {
   display: inline-flex;
   align-items: center;
   margin: 0.25em 0.5em;
@@ -423,7 +425,7 @@
       color: var(--primary) !important;
       border-color: var(--primary-low-mid);
     }
-    
+
     .summary-label {
       font-weight: normal;
       font-size: 0.9em;
@@ -445,17 +447,17 @@
 .notification-levels-container.compact {
   display: inline-flex;
   gap: 10px;
-  
+
   .notification-level-item {
     display: flex;
     align-items: center;
     gap: 3px;
-    
+
     .d-icon {
       font-size: 0.85em;
       color: var(--primary-medium);
     }
-    
+
     .notification-count {
       font-weight: bold;
       font-size: 0.9em;
@@ -470,7 +472,7 @@
   flex-wrap: wrap !important;
 }
 
-.visible-permissions-table {
+.reach-and-rights-table {
   width: 100%;
   border-collapse: collapse;
 
@@ -493,13 +495,13 @@
     font-weight: bold;
   }
 
-  .discourse-visible-permissions-table th.num,
-  .discourse-visible-permissions-table td.num {
+  .discourse-reach-and-rights-table th.num,
+  .discourse-reach-and-rights-table td.num {
     text-align: right;
   }
 }
 
-.discourse-visible-permissions-summary {
+.discourse-reach-and-rights-summary {
   .notification-levels-container.compact {
     display: flex;
     align-items: center;
@@ -521,18 +523,18 @@
   gap: 0.3em;
   margin-left: 0.6em;
   padding-left: 0.6em;
-  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-left: 1px solid rgb(255, 255, 255, 0.3);
   font-weight: normal;
   font-size: 0.9em;
 
   .d-icon {
     font-size: 0.85em;
-    color: currentColor;
+    color: currentcolor;
     opacity: 0.9;
   }
 }
 
 // Spezielle Korrektur für Buttons mit primären Farben
 .btn-primary .outreach-info {
-  border-left-color: rgba(255, 255, 255, 0.3);
+  border-left-color: rgb(255, 255, 255, 0.3);
 }

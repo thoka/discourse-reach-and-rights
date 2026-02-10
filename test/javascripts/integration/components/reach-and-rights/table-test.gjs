@@ -1,9 +1,9 @@
 import { render } from "@ember/test-helpers";
 import { module, test } from "qunit";
 import { setupRenderingTest } from "discourse/tests/helpers/component-test";
-import VisiblePermissionsTable from "discourse/plugins/discourse-visible-permissions/discourse/components/visible-permissions/table";
+import ReachAndRightsTable from "discourse/plugins/discourse-reach-and-rights/discourse/components/reach-and-rights/table";
 
-module("Integration | Component | visible-permissions/table", function (hooks) {
+module("Integration | Component | reach-and-rights/table", function (hooks) {
   setupRenderingTest(hooks);
 
   test("it renders notification counts and summary row correctly", async function (assert) {
@@ -23,18 +23,26 @@ module("Integration | Component | visible-permissions/table", function (hooks) {
         3: 50,
         4: 2,
         2: 10,
-        0: 5
-      }
+        0: 5,
+      },
     });
 
-    await render(<template><VisiblePermissionsTable @data={{this.data}} /></template>);
+    await render(
+      <template><ReachAndRightsTable @data={{this.data}} /></template>
+    );
 
     // Basic data check
-    assert.dom(".notification-cell.level-3").hasText("42", "renders watching count for group");
-    
+    assert
+      .dom(".notification-cell.level-3")
+      .hasText("42", "renders watching count for group");
+
     // Summary row check
     assert.dom(".summary-row").exists("summary row exists");
-    assert.dom(".summary-row .level-3").hasText("50", "renders total watching count");
-    assert.dom(".summary-row .level-4").hasText("2", "renders total watching first post count");
+    assert
+      .dom(".summary-row .level-3")
+      .hasText("50", "renders total watching count");
+    assert
+      .dom(".summary-row .level-4")
+      .hasText("2", "renders total watching first post count");
   });
 });

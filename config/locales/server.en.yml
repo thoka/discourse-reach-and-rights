@@ -1,13 +1,13 @@
 en:
   site_settings:
-    discourse_visible_permissions_enabled: "Enable visible permissions for categories."
-    discourse_visible_permissions_default_view: "Default view for the permissions tag."
-    discourse_visible_permissions_color_create: "Color for 'Create' permission badge (Hex)."
-    discourse_visible_permissions_color_reply: "Color for 'Reply' permission badge (Hex)."
-    discourse_visible_permissions_color_see: "Color for 'See' permission badge (Hex)."
-    discourse_visible_permissions_min_trust_level: "Minimum trust level required to see the permissions tag."
-    discourse_visible_permissions_cache_ttl_minutes: "Duration in minutes to cache permission calculations (0 to disable)."
-  discourse_visible_permissions:
+    discourse_reach_and_rights_enabled: "Enable reach and rights for categories."
+    discourse_reach_and_rights_default_view: "Default view for the permissions tag."
+    discourse_reach_and_rights_color_create: "Color for 'Create' permission badge (Hex)."
+    discourse_reach_and_rights_color_reply: "Color for 'Reply' permission badge (Hex)."
+    discourse_reach_and_rights_color_see: "Color for 'See' permission badge (Hex)."
+    discourse_reach_and_rights_min_trust_level: "Minimum trust level required to see the permissions tag."
+    discourse_reach_and_rights_cache_ttl_minutes: "Duration in minutes to cache permission calculations (0 to disable)."
+  discourse_reach_and_rights:
     everyone: "everyone"
     logged_in: "logged in"
     admins: "admins"

@@ -3,7 +3,7 @@ import { ajax } from "discourse/lib/ajax";
 
 const CACHE_TTL = 600000; // 10 Minuten in Millisekunden
 
-export default class VisiblePermissionsCache extends Service {
+export default class ReachAndRightsCache extends Service {
   _cache = new Map();
   _promises = new Map();
 
@@ -11,7 +11,7 @@ export default class VisiblePermissionsCache extends Service {
     const entry = this._cache.get(categoryId);
     const now = Date.now();
 
-    if (!force && entry && (now - entry.timestamp < CACHE_TTL)) {
+    if (!force && entry && now - entry.timestamp < CACHE_TTL) {
       return entry.data;
     }
 
@@ -19,7 +19,7 @@ export default class VisiblePermissionsCache extends Service {
       return this._promises.get(categoryId);
     }
 
-    const promise = ajax(`/c/${categoryId}/permissions.json`)
+    const promise = ajax(`/c/${categoryId}/reach-and-rights.json`)
       .then((data) => {
         this.setPermissions(categoryId, data);
         return data;

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require File.expand_path("../../../../../spec/rails_helper", __dir__)
 
-describe DiscourseVisiblePermissions::PermissionsFetcher do
+describe DiscourseReachAndRights::PermissionsFetcher do
   fab!(:category) { Fabricate(:category) }
   # Ensure the group is NOT an automatic group to avoid unexpected members
   fab!(:group) { Fabricate(:group, automatic: false) }

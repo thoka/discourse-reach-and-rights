@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module ::DiscourseVisiblePermissions
+module ::DiscourseReachAndRights
   class Engine < ::Rails::Engine
     engine_name PLUGIN_NAME
-    isolate_namespace DiscourseVisiblePermissions
+    isolate_namespace DiscourseReachAndRights
     config.autoload_paths << File.join(config.root, "lib")
     scheduled_job_dir = "#{config.root}/app/jobs/scheduled"
     config.to_prepare do

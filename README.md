@@ -1,4 +1,4 @@
-# **Discourse Visible Permissions** Plugin
+# **Discourse Reach and Rights** Plugin
 
 This plugin enables an infobox about configured permissions (who is allowed to create/respond/read) for categories.
 
@@ -14,49 +14,54 @@ This plugin enables an infobox about configured permissions (who is allowed to c
 - **Detailed Notification Tracking**: Displays specific subscription counts (Watching, Tracking, Muted) using official Discourse icons.
 - **Aggregate Summary Row**: Shows total actual user subscriptions for the entire category at the bottom of the table.
 - **Localization**: Full support for German and English, including localized automatic group names (e.g., "jeder", "Team").
-- **Automatic Detection**: Using `[show-permissions]` without a category ID inside a topic automatically detects the category from the topic.
+- **Automatic Detection**: Using `[reach-and-rights]` without a category ID inside a topic automatically detects the category from the topic.
 
 ## BBCode
+
+Primary tag: `[reach-and-rights]` (supports `category` and `view` attributes).
+Alias (deprecated): `[show-permissions]` for backward compatibility.
 
 Use:
 
 ```
-[show-permissions]
+[reach-and-rights]
 
-[show-permissions category=123]
+[reach-and-rights category=123]
 ```
 
 ## Current Status
 
 - API endpoint implemented for per-category permissions (logged-in + can see category).
-- BBCode `[show-permissions]` emits a placeholder element and renders data from the endpoint.
+- BBCode `[reach-and-rights]` emits a placeholder element and renders data from the endpoint.
 
 ## Usage
 
 Example BBCode:
-- `[show-permissions category=5]`
-- `[show-permissions category=5 view="classic"]` (Detailed matrix view)
-- `[show-permissions category=5 view="short"]` (Icon list by level)
-- `[show-permissions category=5 class="custom-class"]`
-- `[show-permissions]` (automatically detects the current category when used inside a topic)
+- `[reach-and-rights category=5]`
+- `[reach-and-rights category=5 view="classic"]` (Detailed matrix view)
+- `[reach-and-rights category=5 view="short"]` (Icon list by level)
+- `[reach-and-rights category=5 class="custom-class"]`
+- `[reach-and-rights]` (automatically detects the current category when used inside a topic)
+
+Also works with `[show-permissions]` for existing posts.
 
 ## Configuration
 
-You can set the default view for all `[show-permissions]` tags in the site settings:
-- `discourse_visible_permissions_default_view`: Choose between `table` (modern, default), `classic`, and `short`.
-- `discourse_visible_permissions_color_create`: Hex color for the "Create" badge.
-- `discourse_visible_permissions_color_reply`: Hex color for the "Reply" badge.
-- `discourse_visible_permissions_color_see`: Hex color for the "See" badge.
-- `discourse_visible_permissions_min_trust_level`: Minimum trust level required to see the tag (default: 0).
+You can set the default view for all `[reach-and-rights]` tags in the site settings:
+- `discourse_reach_and_rights_default_view`: Choose between `table` (modern, default), `classic`, and `short`.
+- `discourse_reach_and_rights_color_create`: Hex color for the "Create" badge.
+- `discourse_reach_and_rights_color_reply`: Hex color for the "Reply" badge.
+- `discourse_reach_and_rights_color_see`: Hex color for the "See" badge.
+- `discourse_reach_and_rights_min_trust_level`: Minimum trust level required to see the tag (default: 0).
 
 ## Rake Tasks
 
 ### Append tag to all category descriptions
 
-To automatically add the `[show-permissions]` tag to all existing category description topics (the "About the... category" topics), you can run:
+To automatically add the `[reach-and-rights]` tag to all existing category description topics (the "About the... category" topics), you can run:
 
 ```bash
-rake discourse_visible_permissions:append_to_categories
+rake discourse_reach_and_rights:append_to_categories
 ```
 
 This task will scan all categories and append the tag to the first post of the category's definition topic if it's not already present.
@@ -66,7 +71,7 @@ This task will scan all categories and append the tag to the first post of the c
 
 - **Endpoint:** `GET /c/:category_id/permissions`
 - **Auth:** logged-in users only.
-  - The user must meet the `discourse_visible_permissions_min_trust_level`.
+  - The user must meet the `discourse_reach_and_rights_min_trust_level`.
   - The user must be able to see the category **OR** there must be at least one group associated with the category that the user can join or request membership for.
   - If these conditions are not met, the tag will be automatically hidden in the frontend.
 - **Response:**

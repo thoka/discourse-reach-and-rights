@@ -8,28 +8,28 @@ describe BasicCategorySerializer do
   let(:guardian) { Guardian.new(user) }
 
   before do
-    SiteSetting.discourse_visible_permissions_enabled = true
-    SiteSetting.discourse_visible_permissions_min_trust_level = 1
+    SiteSetting.discourse_reach_and_rights_enabled = true
+    SiteSetting.discourse_reach_and_rights_min_trust_level = 1
   end
 
-  it "includes visible_permissions when enabled" do
+  it "includes reach_and_rights when enabled" do
     serializer = BasicCategorySerializer.new(category, scope: guardian, root: false)
     json = serializer.as_json
-    expect(json[:visible_permissions]).to be_present
-    expect(json[:visible_permissions][:category_id]).to eq(category.id)
+    expect(json[:reach_and_rights]).to be_present
+    expect(json[:reach_and_rights][:category_id]).to eq(category.id)
   end
 
-  it "excludes visible_permissions when trust level is too low" do
-    SiteSetting.discourse_visible_permissions_min_trust_level = 4
+  it "excludes reach_and_rights when trust level is too low" do
+    SiteSetting.discourse_reach_and_rights_min_trust_level = 4
     serializer = BasicCategorySerializer.new(category, scope: guardian, root: false)
     json = serializer.as_json
-    expect(json[:visible_permissions]).to be_nil
+    expect(json[:reach_and_rights]).to be_nil
   end
 
-  it "excludes visible_permissions when disabled" do
-    SiteSetting.discourse_visible_permissions_enabled = false
+  it "excludes reach_and_rights when disabled" do
+    SiteSetting.discourse_reach_and_rights_enabled = false
     serializer = BasicCategorySerializer.new(category, scope: guardian, root: false)
     json = serializer.as_json
-    expect(json[:visible_permissions]).to be_nil
+    expect(json[:reach_and_rights]).to be_nil
   end
 end
