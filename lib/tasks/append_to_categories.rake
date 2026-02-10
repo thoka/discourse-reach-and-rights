@@ -2,7 +2,7 @@
 
 namespace :reach_and_rights do
   desc "Append [reach-and-rights] tag to all category descriptions that don't have it yet"
-  task append_to_categories: :environment do
+  task append_to_category_descriptions: :environment do
     puts I18n.t("discourse_reach_and_rights.append_to_categories.scanning")
     updated = 0
 
