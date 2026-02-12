@@ -70,7 +70,7 @@ module ::DiscourseReachAndRights
         FROM category_groups cg
         JOIN group_users gu ON gu.group_id = cg.group_id
         JOIN users u ON u.id = gu.user_id
-        WHERE u.id > 0
+        WHERE u.id > 0 AND u.active AND NOT u.staged
         GROUP BY cg.category_id
       SQL
 
@@ -96,7 +96,7 @@ module ::DiscourseReachAndRights
         JOIN group_users gu ON gu.user_id = u.id
         JOIN category_groups cg ON cg.group_id = gu.group_id
         LEFT JOIN category_users cu ON cu.user_id = u.id AND cu.category_id = cg.category_id
-        WHERE u.id > 0 AND (
+        WHERE u.id > 0 AND u.active AND NOT u.staged AND (
           (cu.notification_level = :watching_level)
            OR (uo.mailing_list_mode = true AND (cu.notification_level IS NULL OR cu.notification_level != :muted_level))
         )
@@ -121,7 +121,7 @@ module ::DiscourseReachAndRights
         JOIN group_users gu ON gu.user_id = u.id
         JOIN category_groups cg ON cg.group_id = gu.group_id
         JOIN category_users cu ON cu.user_id = u.id AND cu.category_id = cg.category_id
-        WHERE u.id > 0
+        WHERE u.id > 0 AND u.active AND NOT u.staged
           AND cu.notification_level = :first_post_level
           AND NOT (uo.mailing_list_mode = true AND (cu.notification_level IS NULL OR cu.notification_level != :muted_level))
           AND NOT (cu.notification_level = :watching_level)

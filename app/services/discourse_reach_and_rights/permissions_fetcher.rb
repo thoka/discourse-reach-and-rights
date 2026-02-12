@@ -37,8 +37,8 @@ module DiscourseReachAndRights
           group_user_counts =
             Group
               .where(id: all_group_ids)
-              .joins(:group_users)
-              .where("group_users.user_id > 0")
+              .joins(group_users: :user)
+              .where("users.id > 0 AND users.active AND NOT users.staged")
               .group(:group_id)
               .count
 
@@ -55,7 +55,7 @@ module DiscourseReachAndRights
                   if category.read_restricted?
                     category_notification_totals[:total_reach]
                   else
-                    User.real.count
+                    User.human_users.activated.not_staged.count
                   end
                 else
                   group_user_counts[group.id] || 0
@@ -159,7 +159,7 @@ module DiscourseReachAndRights
             group_url: "/g/everyone",
             notification_level: nil,
             notification_levels: cached_data[:category_notification_totals],
-            user_count: User.real.count,
+            user_count: User.human_users.activated.not_staged.count,
           },
         )
       end
@@ -177,7 +177,7 @@ module DiscourseReachAndRights
         allowed_group_ids = category.category_groups.pluck(:group_id)
         return { total_reach: 0 } if allowed_group_ids.empty?
         user_ids_with_access_subquery =
-          "SELECT gu.user_id FROM group_users gu WHERE gu.group_id IN (#{allowed_group_ids.join(",")}) AND gu.user_id > 0"
+          "SELECT gu.user_id FROM group_users gu JOIN users u ON u.id = gu.user_id WHERE gu.group_id IN (#{allowed_group_ids.join(",")}) AND u.id > 0 AND u.active AND NOT u.staged"
       else
         # All real, active, human users
         user_ids_with_access_subquery =
@@ -247,9 +247,10 @@ module DiscourseReachAndRights
                COALESCE(cu.notification_level, gnd.notification_level, :default_level) as final_notification_level, 
                COUNT(*) as count
         FROM group_users gu
+        JOIN users u ON u.id = gu.user_id
         LEFT JOIN group_category_notification_defaults gnd ON gnd.group_id = gu.group_id AND gnd.category_id = :category_id
         LEFT JOIN category_users cu ON cu.user_id = gu.user_id AND cu.category_id = :category_id
-        WHERE gu.group_id IN (:group_ids) AND gu.user_id > 0
+        WHERE gu.group_id IN (:group_ids) AND u.id > 0 AND u.active AND NOT u.staged
         GROUP BY gu.group_id, final_notification_level
       SQL
 

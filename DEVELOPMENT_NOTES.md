@@ -39,7 +39,7 @@ Discourse uses a multi-layered system for category notification levels:
     *   `2`: Tracking
     *   `3`: Watching
     *   `4`: Watching First Post
-*   **Human Users Only**: All calculations (Unique Reach, Group counts, Bulk stats) explicitly exclude non-human users (system user, bots, anonymous placeholders). This is enforced via `id > 0` checks in SQL and `.human_users` in ActiveRecord scopes.
+*   **Active Users Only**: All calculations (Unique Reach, Group counts, Bulk stats) explicitly exclude non-human users (system, bots) AND inactive/staged users. This is enforced via `active AND NOT staged` checks in SQL and `.activated.not_staged` in ActiveRecord scopes. This ensures that counts match active community size and exclude deleted or unactivated accounts.
 *   **Deduplication**: In SQL queries, `COUNT(DISTINCT user_id)` is used to ensure users in multiple groups are only counted once for category-wide reach.
 
 ## 6. Reach Statistics (Background)

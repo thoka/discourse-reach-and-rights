@@ -103,6 +103,23 @@ describe DiscourseReachAndRights::PermissionsFetcher do
     expect(perm[:group_id]).to eq(secret_group.id)
   end
 
+  it "excludes inactive and staged users from calculations" do
+    active_user = Fabricate(:user, active: true, staged: false)
+    inactive_user = Fabricate(:user, active: false, staged: false)
+    staged_user = Fabricate(:user, active: true, staged: true)
+
+    group.add(active_user)
+    group.add(inactive_user)
+    group.add(staged_user)
+
+    result = described_class.call(category: category, guardian: Guardian.new(user_a))
+    group_data = result.permissions.find { |g| g[:group_id] == group.id }
+
+    # user_a and user_b are active (from before block), plus active_user = 3
+    # inactive_user and staged_user should be excluded
+    expect(group_data[:user_count]).to eq(3)
+  end
+
   it "prioritizes Watching (3) over Watching First Post (4) in totals" do
     # Scenario: User belongs to two groups, one with Watching First Post default,
     # another with Watching default.

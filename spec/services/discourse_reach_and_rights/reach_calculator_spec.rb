@@ -20,6 +20,16 @@ describe DiscourseReachAndRights::ReachCalculator do
     expect(stat.reach_count).to eq(1)
   end
 
+  it "excludes inactive and staged users from restricted category reach" do
+    group.add(Fabricate(:user, active: false, staged: false))
+    group.add(Fabricate(:user, active: true, staged: true))
+
+    DiscourseReachAndRights::ReachCalculator.run
+    stat = DiscourseReachAndRights::Stat.find_by(category_id: category.id)
+
+    expect(stat.reach_count).to eq(1) # Only 'user' from before block
+  end
+
   describe "mailing list mode" do
     fab!(:ml_user, :user)
 
@@ -90,6 +100,16 @@ describe DiscourseReachAndRights::ReachCalculator do
     fab!(:another_user, :user)
 
     it "includes all human active users in reach for public categories" do
+      DiscourseReachAndRights::ReachCalculator.run
+      stat = DiscourseReachAndRights::Stat.find_by(category_id: public_category.id)
+
+      expect(stat.reach_count).to eq(User.human_users.activated.not_staged.count)
+    end
+
+    it "excludes inactive and staged users from public category reach" do
+      Fabricate(:user, active: false, staged: false)
+      Fabricate(:user, active: true, staged: true)
+
       DiscourseReachAndRights::ReachCalculator.run
       stat = DiscourseReachAndRights::Stat.find_by(category_id: public_category.id)
 
