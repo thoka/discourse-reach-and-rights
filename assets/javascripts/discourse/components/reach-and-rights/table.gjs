@@ -6,6 +6,7 @@ import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import dIcon from "discourse/helpers/d-icon";
+import Category from "discourse/models/category";
 import { i18n } from "discourse-i18n";
 
 export default class ReachAndRightsTable extends Component {
@@ -96,13 +97,18 @@ export default class ReachAndRightsTable extends Component {
     return this.viewType === "short";
   }
 
+  get category() {
+    return this.args.category || Category.findById(this.categoryId);
+  }
+
   get localizedTableTitle() {
     const data = this.effectiveData;
     if (!this.hasData) {
       return "";
     }
+    const categoryName = data.category_name || this.category?.name || "";
     return i18n("js.discourse_reach_and_rights.table_title", {
-      category_name: data.category_name || "Unknown",
+      category_name: categoryName,
     });
   }
 
@@ -245,26 +251,6 @@ export default class ReachAndRightsTable extends Component {
   }
 
   @action
-  getNotificationTitleByName(level) {
-    if (level === 3) {
-      return "watching";
-    }
-    if (level === 4) {
-      return "watching_first_post";
-    }
-    if (level === 2) {
-      return "tracking";
-    }
-    if (level === 1) {
-      return "regular";
-    }
-    if (level === 0) {
-      return "muted";
-    }
-    return "";
-  }
-
-  @action
   getCount(perm, lvl) {
     const counts = perm.notification_levels;
     if (!counts) {
@@ -292,20 +278,6 @@ export default class ReachAndRightsTable extends Component {
     return this.effectiveData?.category_notification_totals?.total_reach || 0;
   }
 
-  get debugData() {
-    const categoryId = this.categoryId;
-    const data = this.effectiveData;
-    const cacheEntry = this.reachAndRightsCache._cache.get(categoryId);
-    const cacheKeys = Array.from(this.reachAndRightsCache._cache.keys()).join(
-      ","
-    );
-    const localKeys = this.data ? Object.keys(this.data).join(",") : "null";
-    const effectiveKeys = data ? Object.keys(data).join(",") : "none";
-    const hasPerms = !!data?.group_permissions;
-
-    return `ID: ${categoryId} (${typeof categoryId}) | Lcl: ${typeof this.data} [${localKeys}] | Cch: ${!!cacheEntry} | L: ${this.loading} | D: ${hasPerms} | Eff: [${effectiveKeys}] | Keys: [${cacheKeys}]`;
-  }
-
   <template>
     {{#if this.shouldRender}}
       <div
@@ -316,11 +288,11 @@ export default class ReachAndRightsTable extends Component {
       >
         {{#if this.loading}}
           <div class="loading-placeholder">{{i18n
-              "discourse_reach_and_rights.loading"
+              "js.discourse_reach_and_rights.loading"
             }}</div>
         {{else if this.error}}
           <div class="error-placeholder">{{i18n
-              "discourse_reach_and_rights.load_error"
+              "js.discourse_reach_and_rights.load_error"
             }}</div>
         {{else if this.hasData}}
           {{#if this.showHeader}}
@@ -348,8 +320,12 @@ export default class ReachAndRightsTable extends Component {
             <table class="discourse-reach-and-rights-table modern-view">
               <thead>
                 <tr>
-                  <th colspan="3">Berechtigungen</th>
-                  <th colspan="4">Benachrichtigungen</th>
+                  <th colspan="3">{{i18n
+                      "js.discourse_reach_and_rights.permissions"
+                    }}</th>
+                  <th colspan="4">{{i18n
+                      "js.discourse_reach_and_rights.notifications"
+                    }}</th>
                 </tr>
                 <tr>
                   <th class="group-name-header">{{i18n
@@ -397,7 +373,10 @@ export default class ReachAndRightsTable extends Component {
                           class="group-link"
                         >{{perm.group_display_name}}</a>
                       {{else}}
-                        <span class="group-name-static {{if perm.is_hidden 'is-hidden'}}">
+                        <span
+                          class="group-name-static
+                            {{if perm.is_hidden 'is-hidden'}}"
+                        >
                           {{#if perm.is_hidden}}
                             ({{perm.group_display_name}})
                           {{else}}
@@ -435,22 +414,22 @@ export default class ReachAndRightsTable extends Component {
                         {{dIcon perm.permIcon}}
                       </div>
                     </td>
-                    <td class="notification-cell level-3 cell {{if (this.isDefaultLevel perm 3) 'is-default'}}">{{this.getCount
-                        perm
-                        3
-                      }}</td>
-                    <td class="notification-cell level-4 cell {{if (this.isDefaultLevel perm 4) 'is-default'}}">{{this.getCount
-                        perm
-                        4
-                      }}</td>
-                    <td class="notification-cell level-2 cell {{if (this.isDefaultLevel perm 2) 'is-default'}}">{{this.getCount
-                        perm
-                        2
-                      }}</td>
-                    <td class="notification-cell level-0 cell {{if (this.isDefaultLevel perm 0) 'is-default'}}">{{this.getCount
-                        perm
-                        0
-                      }}</td>
+                    <td
+                      class="notification-cell level-3 cell
+                        {{if (this.isDefaultLevel perm 3) 'is-default'}}"
+                    >{{this.getCount perm 3}}</td>
+                    <td
+                      class="notification-cell level-4 cell
+                        {{if (this.isDefaultLevel perm 4) 'is-default'}}"
+                    >{{this.getCount perm 4}}</td>
+                    <td
+                      class="notification-cell level-2 cell
+                        {{if (this.isDefaultLevel perm 2) 'is-default'}}"
+                    >{{this.getCount perm 2}}</td>
+                    <td
+                      class="notification-cell level-0 cell
+                        {{if (this.isDefaultLevel perm 0) 'is-default'}}"
+                    >{{this.getCount perm 0}}</td>
                   </tr>
                 {{/each}}
               </tbody>

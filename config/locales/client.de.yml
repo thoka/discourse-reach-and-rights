@@ -12,6 +12,8 @@ de:
       missing_category: "Fehlende Kategorie-ID für Reach and Rights."
       modal_title: "Reach and Rights"
       table_title: "Reach and Rights in %{category_name}"
+      permissions: "Berechtigungen"
+      notifications: "Benachrichtigungen"
       permissions_header: "Berechtigung"
       group_default: "Gruppen-Standard"
       default: "Standard"

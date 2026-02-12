@@ -20,11 +20,6 @@ export default class ReachAndRightsSummary extends Component {
 
   _lastCategoryId = null;
 
-  constructor() {
-    super(...arguments);
-    // console.log("Initial Args:", JSON.stringify(this.args,null,2));
-  }
-
   get effectiveData() {
     if (!this || this.isDestroyed || this.isDestroying) {
       return null;
@@ -140,17 +135,20 @@ export default class ReachAndRightsSummary extends Component {
     const data = this.effectiveData;
     if (data) {
       const categoryId = this.categoryId;
+      const category = this.args.category || this.args.outletArgs?.category;
       if (this.siteSettings.discourse_reach_and_rights_debug_enabled) {
         // eslint-disable-next-line no-console
         console.log("ReachAndRightsSummary [Debug] Opening modal:", {
           categoryId,
           data,
+          category,
         });
       }
       this.modal.show(ReachAndRightsDetails, {
         model: {
           data,
           categoryId,
+          category,
         },
       });
     }
@@ -168,26 +166,30 @@ export default class ReachAndRightsSummary extends Component {
       >
         {{#if this.loading}}
           <span class="loading-placeholder">{{i18n
-              "discourse_reach_and_rights.loading"
+              "js.discourse_reach_and_rights.loading"
             }}</span>
         {{else if this.effectiveData}}
-            <div class="notification-levels-container compact">
-              <span
-                class="notification-level-item reach-total"
-                title={{i18n "js.discourse_reach_and_rights.total_reach"}}
-              >
-                {{dIcon "eye"}}
-                <span class="notification-count">{{this.totalReach}}</span>
-              </span>
+          <div class="notification-levels-container compact">
+            <span
+              class="notification-level-item reach-total"
+              title={{i18n "js.discourse_reach_and_rights.total_reach"}}
+            >
+              {{dIcon "eye"}}
+              <span class="notification-count">{{this.totalReach}}</span>
+            </span>
 
+            <span
+              class="notification-level-item notifications-total"
+              title={{i18n
+                "js.discourse_reach_and_rights.potential_notifications"
+              }}
+            >
+              {{dIcon "paper-plane"}}
               <span
-                class="notification-level-item notifications-total"
-                title={{i18n "js.discourse_reach_and_rights.potential_notifications"}}
-              >
-                {{dIcon "paper-plane"}}
-                <span class="notification-count">{{this.expectedNotificationCount}}</span>
-              </span>
-            </div>
+                class="notification-count"
+              >{{this.expectedNotificationCount}}</span>
+            </span>
+          </div>
         {{/if}}
       </button>
     {{/if}}
