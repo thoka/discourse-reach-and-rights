@@ -89,11 +89,56 @@ describe DiscourseReachAndRights::ReachCalculator do
     fab!(:public_category) { Fabricate(:category, read_restricted: false) }
     fab!(:another_user, :user)
 
-    it "includes all active users in reach for public categories" do
+    it "includes all human active users in reach for public categories" do
       DiscourseReachAndRights::ReachCalculator.run
       stat = DiscourseReachAndRights::Stat.find_by(category_id: public_category.id)
 
-      expect(stat.reach_count).to eq(User.activated.not_staged.count)
+      expect(stat.reach_count).to eq(User.human_users.activated.not_staged.count)
+    end
+  end
+
+  describe "overlapping groups" do
+    fab!(:group_2, :group)
+    fab!(:user_2, :user)
+
+    before do
+      category.permissions = { group.name => :readonly, group_2.name => :readonly }
+      category.save!
+      group.add(user_2)
+      group_2.add(user_2)
+    end
+
+    it "counts users only once even if they are in multiple groups" do
+      DiscourseReachAndRights::ReachCalculator.run
+      stat = DiscourseReachAndRights::Stat.find_by(category_id: category.id)
+
+      # user and user_2 are the only human users (plus any pre-existing ones in test env, but fab! helps)
+      # user is in group
+      # user_2 is in group AND group_2
+      expect(stat.reach_count).to eq(2)
+    end
+  end
+
+  describe "system users" do
+    it "excludes the system user from reach counts" do
+      # Ensure system user is in the group
+      group.add(Discourse.system_user)
+
+      DiscourseReachAndRights::ReachCalculator.run
+      stat = DiscourseReachAndRights::Stat.find_by(category_id: category.id)
+
+      # Only 'user' should be counted, not system_user
+      expect(stat.reach_count).to eq(1)
+    end
+
+    it "excludes the system user from public category reach counts" do
+      public_category = Fabricate(:category, read_restricted: false)
+
+      DiscourseReachAndRights::ReachCalculator.run
+      stat = DiscourseReachAndRights::Stat.find_by(category_id: public_category.id)
+
+      # Should only count human users
+      expect(stat.reach_count).to eq(User.human_users.activated.not_staged.count)
     end
   end
 end

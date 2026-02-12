@@ -119,4 +119,17 @@ describe DiscourseReachAndRights::PermissionsFetcher do
     expect(reach).to eq(expected_count)
     expect(reach).to be >= 2 # At least user_a and user_b
   end
+
+  it "excludes non-human (system) users from counts" do
+    group.add(Discourse.system_user)
+
+    result = described_class.call(category: category, guardian: Guardian.new(user_a))
+
+    # Total reach should still be 2 (user_a, user_b), system user is ignored
+    reach = result.category_notification_totals[:total_reach]
+    expect(reach).to eq(2)
+
+    group_data = result.permissions.find { |g| g[:group_id] == group.id }
+    expect(group_data[:user_count]).to eq(2)
+  end
 end

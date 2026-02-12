@@ -35,7 +35,12 @@ module DiscourseReachAndRights
             calculate_group_notification_counts(all_group_ids, category.id)
 
           group_user_counts =
-            Group.where(id: all_group_ids).joins(:group_users).group(:group_id).count
+            Group
+              .where(id: all_group_ids)
+              .joins(:group_users)
+              .where("group_users.user_id > 0")
+              .group(:group_id)
+              .count
 
           group_data =
             groups.map do |group|
@@ -150,7 +155,7 @@ module DiscourseReachAndRights
         allowed_group_ids = category.category_groups.pluck(:group_id)
         return { total_reach: 0 } if allowed_group_ids.empty?
         user_ids_with_access_subquery =
-          "SELECT gu.user_id FROM group_users gu WHERE gu.group_id IN (#{allowed_group_ids.join(",")})"
+          "SELECT gu.user_id FROM group_users gu WHERE gu.group_id IN (#{allowed_group_ids.join(",")}) AND gu.user_id > 0"
       else
         # All real, active, human users
         user_ids_with_access_subquery =
@@ -222,7 +227,7 @@ module DiscourseReachAndRights
         FROM group_users gu
         LEFT JOIN group_category_notification_defaults gnd ON gnd.group_id = gu.group_id AND gnd.category_id = :category_id
         LEFT JOIN category_users cu ON cu.user_id = gu.user_id AND cu.category_id = :category_id
-        WHERE gu.group_id IN (:group_ids)
+        WHERE gu.group_id IN (:group_ids) AND gu.user_id > 0
         GROUP BY gu.group_id, final_notification_level
       SQL
 
