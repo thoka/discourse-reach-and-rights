@@ -457,15 +457,24 @@
 
 /* Modal Optimization */
 .reach-and-rights-details-modal {
+  .d-modal__body,
   .modal-body {
     padding: 0 !important;
+  }
 
-    .discourse-reach-and-rights-container {
-      border: none !important;
-      border-radius: 0 !important;
-      width: 100% !important;
-      margin: 0 !important;
-    }
+  .discourse-reach-and-rights-container {
+    display: block !important;
+    border: none !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important; // Complete reset
+    box-shadow: none !important;
+    background: transparent !important; // Let it use the modal background
+  }
+
+  .discourse-reach-and-rights-table {
+    margin: 0 !important;
   }
 }
 
