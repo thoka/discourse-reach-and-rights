@@ -92,35 +92,6 @@ export default class ReachAndRightsSummary extends Component {
     return !!this.categoryId;
   }
 
-  get notificationTotals() {
-    const data = this.effectiveData;
-    if (!data?.category_notification_totals) {
-      return [];
-    }
-
-    const levels = this.isFirstPost ? [3, 4, 2, 0] : [3, 2, 0];
-
-    return levels
-      .map((lvl) => {
-        const count = data.category_notification_totals[lvl] || 0;
-        if (count > 0) {
-          let icon = "bell";
-          if (lvl === 3) {
-            icon = "d-watching";
-          } else if (lvl === 4) {
-            icon = "d-watching-first";
-          } else if (lvl === 2) {
-            icon = "d-tracking";
-          } else if (lvl === 0) {
-            icon = "d-muted";
-          }
-          return { count, icon };
-        }
-        return null;
-      })
-      .filter(Boolean);
-  }
-
   get totalReach() {
     return this.effectiveData?.category_notification_totals?.total_reach || 0;
   }
@@ -216,13 +187,6 @@ export default class ReachAndRightsSummary extends Component {
                 {{dIcon "paper-plane"}}
                 <span class="notification-count">{{this.expectedNotificationCount}}</span>
               </span>
-
-              {{#each this.notificationTotals as |lvl|}}
-                <span class="notification-level-item detail">
-                  {{dIcon lvl.icon}}
-                  <span class="notification-count">{{lvl.count}}</span>
-                </span>
-              {{/each}}
             </div>
         {{/if}}
       </button>

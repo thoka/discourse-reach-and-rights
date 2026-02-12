@@ -393,7 +393,13 @@ export default class ReachAndRightsTable extends Component {
                           class="group-link"
                         >{{perm.group_display_name}}</a>
                       {{else}}
-                        <span class="group-name-static">{{perm.group_display_name}}</span>
+                        <span class="group-name-static {{if perm.is_hidden 'is-hidden'}}">
+                          {{#if perm.is_hidden}}
+                            ({{perm.group_display_name}})
+                          {{else}}
+                            {{perm.group_display_name}}
+                          {{/if}}
+                        </span>
                       {{/if}}
 
                       {{#if perm.can_join}}

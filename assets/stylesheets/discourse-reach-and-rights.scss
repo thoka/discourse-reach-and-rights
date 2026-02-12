@@ -137,6 +137,11 @@
             align-items: center;
             gap: 8px;
 
+            .group-name-static.is-hidden {
+              font-style: italic;
+              font-weight: normal;
+            }
+
             .group-action-link {
               color: var(--primary-low-mid);
               font-size: 0.8em;
