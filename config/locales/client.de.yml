@@ -32,3 +32,4 @@ de:
       access_level: "Zugriff"
       notification_level: "Benachrichtigung"
       total_reach: "Gesamtreichweite (Nutzer, die diese Kategorie sehen können)"
+      hidden_group: "versteckt"

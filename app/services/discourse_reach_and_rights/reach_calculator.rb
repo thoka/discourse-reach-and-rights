@@ -69,11 +69,13 @@ module ::DiscourseReachAndRights
         SELECT cg.category_id, COUNT(DISTINCT gu.user_id) as count
         FROM category_groups cg
         JOIN group_users gu ON gu.group_id = cg.group_id
+        JOIN users u ON u.id = gu.user_id
+        WHERE u.id > 0
         GROUP BY cg.category_id
       SQL
 
       # Public categories (those that are NOT read_restricted)
-      total_real_users = User.activated.not_staged.count
+      total_real_users = User.human_users.activated.not_staged.count
       Category
         .where(read_restricted: false)
         .pluck(:id)
@@ -94,8 +96,10 @@ module ::DiscourseReachAndRights
         JOIN group_users gu ON gu.user_id = u.id
         JOIN category_groups cg ON cg.group_id = gu.group_id
         LEFT JOIN category_users cu ON cu.user_id = u.id AND cu.category_id = cg.category_id
-        WHERE (cu.notification_level = :watching_level)
+        WHERE u.id > 0 AND (
+          (cu.notification_level = :watching_level)
            OR (uo.mailing_list_mode = true AND (cu.notification_level IS NULL OR cu.notification_level != :muted_level))
+        )
         GROUP BY cg.category_id
       SQL
         .each_with_object({}) { |r, h| h[r.category_id] = r.count }
@@ -117,7 +121,8 @@ module ::DiscourseReachAndRights
         JOIN group_users gu ON gu.user_id = u.id
         JOIN category_groups cg ON cg.group_id = gu.group_id
         JOIN category_users cu ON cu.user_id = u.id AND cu.category_id = cg.category_id
-        WHERE cu.notification_level = :first_post_level
+        WHERE u.id > 0
+          AND cu.notification_level = :first_post_level
           AND NOT (uo.mailing_list_mode = true AND (cu.notification_level IS NULL OR cu.notification_level != :muted_level))
           AND NOT (cu.notification_level = :watching_level)
         GROUP BY cg.category_id
@@ -127,11 +132,6 @@ module ::DiscourseReachAndRights
             muted_level: muted_level,
           )
           .each_with_object({}) { |r, h| h[r.category_id] = r.count }
-
-      # Combine with watching_counts
-      watching_counts.each_with_object(results.dup) do |(c_id, count), h|
-        h[c_id] = (h[c_id] || 0) + count
-      end
     end
 
     def publish_updates(updates)

@@ -19,6 +19,7 @@ en:
     trust_level_2: "trust level 2"
     trust_level_3: "trust level 3"
     trust_level_4: "trust level 4"
+    hidden_group: "hidden"
     append_to_categories:
       scanning: "Scanning categories..."
       updating: "Updating category '%{name}' (Topic: %{id})"

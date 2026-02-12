@@ -58,10 +58,12 @@ export default {
               ) {
                 helper.renderGlimmer(placeholder, ReachAndRightsSummary, {
                   categoryId: parsedId,
+                  topic: helper.model?.topic || helper.model,
                 });
               } else {
                 helper.renderGlimmer(placeholder, ReachAndRightsTable, {
                   categoryId: parsedId,
+                  topic: helper.model?.topic || helper.model,
                   view,
                   showHeader,
                   style,

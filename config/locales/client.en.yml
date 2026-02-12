@@ -32,3 +32,4 @@ en:
       access_level: "Access"
       notification_level: "Notification"
       total_reach: "Total Reach (users who can see this category)"
+      hidden_group: "hidden"

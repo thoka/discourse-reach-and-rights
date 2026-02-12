@@ -35,7 +35,12 @@ module DiscourseReachAndRights
             calculate_group_notification_counts(all_group_ids, category.id)
 
           group_user_counts =
-            Group.where(id: all_group_ids).joins(:group_users).group(:group_id).count
+            Group
+              .where(id: all_group_ids)
+              .joins(:group_users)
+              .where("group_users.user_id > 0")
+              .group(:group_id)
+              .count
 
           group_data =
             groups.map do |group|
@@ -85,35 +90,57 @@ module DiscourseReachAndRights
           fetch_data.call
         end
 
-      # 3. Filter groups visible to current user and augment with user-specific flags
-      visible_groups =
-        Group.visible_groups(user, nil, include_everyone: true).where(id: all_group_ids).to_a
-      visible_group_ids = visible_groups.map(&:id)
+      # 3. Process groups and handle hidden groups
+      all_groups = Group.where(id: all_group_ids).to_a
+      visible_group_ids =
+        Group.visible_groups(user, nil, include_everyone: true).where(id: all_group_ids).pluck(:id)
 
       permissions =
         cached_data[:group_data]
-          .select { |gd| visible_group_ids.include?(gd[:group_id]) }
           .map do |gd|
-            is_member = user && user.group_ids.include?(gd[:group_id])
-            group_obj = visible_groups.find { |g| g.id == gd[:group_id] }
+            is_visible = visible_group_ids.include?(gd[:group_id])
+            group_obj = all_groups.find { |g| g.id == gd[:group_id] }
+            next if group_obj.blank?
 
-            {
-              permission_type: gd[:permission_type],
-              permission: CategoryGroup.permission_types.key(gd[:permission_type]),
-              group_name: gd[:group_name],
-              group_display_name: localized_group_name(gd[:group_name], gd[:group_full_name]),
-              group_id: gd[:group_id],
-              can_join: user && gd[:public_admission] && !is_member,
-              can_request:
-                user && gd[:allow_membership_requests] && !is_member &&
-                  !GroupRequest.where(group_id: gd[:group_id], user: user).exists?,
-              is_member: is_member,
-              group_url: guardian.can_see?(group_obj) ? "/g/#{gd[:group_name]}" : nil,
-              notification_level: gd[:notification_level],
-              notification_levels: gd[:notification_levels],
-              user_count: gd[:user_count],
-            }
+            is_member = user && user.group_ids.include?(gd[:group_id])
+
+            if is_visible
+              {
+                permission_type: gd[:permission_type],
+                permission: CategoryGroup.permission_types.key(gd[:permission_type]),
+                group_name: gd[:group_name],
+                group_display_name: localized_group_name(gd[:group_name], gd[:group_full_name]),
+                group_id: gd[:group_id],
+                can_join: user && gd[:public_admission] && !is_member,
+                can_request:
+                  user && gd[:allow_membership_requests] && !is_member &&
+                    !GroupRequest.where(group_id: gd[:group_id], user: user).exists?,
+                is_member: is_member,
+                group_url: "/g/#{gd[:group_name]}",
+                notification_level: gd[:notification_level],
+                notification_levels: gd[:notification_levels],
+                user_count: gd[:user_count],
+                is_hidden: false,
+              }
+            else
+              {
+                permission_type: gd[:permission_type],
+                permission: CategoryGroup.permission_types.key(gd[:permission_type]),
+                group_name: nil,
+                group_display_name: I18n.t("discourse_reach_and_rights.hidden_group"),
+                group_id: nil,
+                can_join: false,
+                can_request: false,
+                is_member: is_member,
+                group_url: nil,
+                notification_level: gd[:notification_level],
+                notification_levels: gd[:notification_levels],
+                user_count: gd[:user_count],
+                is_hidden: true,
+              }
+            end
           end
+          .compact
 
       # 4. Handle 'everyone' group if it's missing (e.g. category not read_restricted)
       if !category.read_restricted &&
@@ -150,7 +177,7 @@ module DiscourseReachAndRights
         allowed_group_ids = category.category_groups.pluck(:group_id)
         return { total_reach: 0 } if allowed_group_ids.empty?
         user_ids_with_access_subquery =
-          "SELECT gu.user_id FROM group_users gu WHERE gu.group_id IN (#{allowed_group_ids.join(",")})"
+          "SELECT gu.user_id FROM group_users gu WHERE gu.group_id IN (#{allowed_group_ids.join(",")}) AND gu.user_id > 0"
       else
         # All real, active, human users
         user_ids_with_access_subquery =
@@ -222,7 +249,7 @@ module DiscourseReachAndRights
         FROM group_users gu
         LEFT JOIN group_category_notification_defaults gnd ON gnd.group_id = gu.group_id AND gnd.category_id = :category_id
         LEFT JOIN category_users cu ON cu.user_id = gu.user_id AND cu.category_id = :category_id
-        WHERE gu.group_id IN (:group_ids)
+        WHERE gu.group_id IN (:group_ids) AND gu.user_id > 0
         GROUP BY gu.group_id, final_notification_level
       SQL
 

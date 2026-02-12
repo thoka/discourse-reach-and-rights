@@ -10,6 +10,7 @@ describe SiteSerializer do
   before do
     SiteSetting.discourse_reach_and_rights_enabled = true
     SiteSetting.discourse_reach_and_rights_min_trust_level = 1
+    DiscourseReachAndRights::StatsStore.clear!
 
     DiscourseReachAndRights::Stat.create!(
       category_id: category.id,
@@ -29,8 +30,9 @@ describe SiteSerializer do
 
     expect(category_json).to be_present
     expect(category_json[:reach_and_rights]).to be_present
-    expect(category_json[:reach_and_rights][:reach_count]).to eq(77)
-    expect(category_json[:reach_and_rights][:watching_count]).to eq(7)
-    expect(category_json[:reach_and_rights][:watching_first_post_count]).to eq(17)
+    totals = category_json[:reach_and_rights][:category_notification_totals]
+    expect(totals["3"]).to eq(7)
+    expect(totals["4"]).to eq(17)
+    expect(totals["total_reach"]).to eq(77)
   end
 end

@@ -10,6 +10,7 @@ describe BasicCategorySerializer do
   before do
     SiteSetting.discourse_reach_and_rights_enabled = true
     SiteSetting.discourse_reach_and_rights_min_trust_level = 1
+    DiscourseReachAndRights::StatsStore.clear!
   end
 
   it "includes reach_and_rights when enabled" do
@@ -24,9 +25,10 @@ describe BasicCategorySerializer do
     json = serializer.as_json
     expect(json[:reach_and_rights]).to be_present
     expect(json[:reach_and_rights][:category_id]).to eq(category.id)
-    expect(json[:reach_and_rights][:reach_count]).to eq(50)
-    expect(json[:reach_and_rights][:watching_count]).to eq(10)
-    expect(json[:reach_and_rights][:watching_first_post_count]).to eq(20)
+    totals = json[:reach_and_rights][:category_notification_totals]
+    expect(totals["3"]).to eq(10)
+    expect(totals["4"]).to eq(20)
+    expect(totals["total_reach"]).to eq(50)
   end
 
   it "excludes reach_and_rights when trust level is too low" do

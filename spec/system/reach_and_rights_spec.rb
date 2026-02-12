@@ -5,7 +5,7 @@ require File.expand_path("../../../../spec/rails_helper", __dir__)
 RSpec.describe "Reach and Rights", type: :system do
   fab!(:admin)
   fab!(:category)
-  fab!(:group)
+  fab!(:group) { Fabricate(:group, name: "testgroup") }
   fab!(:user)
 
   before do
@@ -41,7 +41,7 @@ RSpec.describe "Reach and Rights", type: :system do
     )
 
     within ".discourse-reach-and-rights-table" do
-      expect(page).to have_content("My group 0")
+      expect(page).to have_content("Testgroup")
     end
   end
 
@@ -51,8 +51,8 @@ RSpec.describe "Reach and Rights", type: :system do
 
     using_session("anonymous") do
       visit post.url
-      expect(page).to have_css(".discourse-reach-and-rights", visible: false)
-      expect(page).not_to have_css(".discourse-reach-and-rights-table")
+      expect(page).to have_no_css(".discourse-reach-and-rights")
+      expect(page).to have_no_css(".discourse-reach-and-rights-table")
     end
   end
 
@@ -65,7 +65,7 @@ RSpec.describe "Reach and Rights", type: :system do
     expect(page).to have_css(".discourse-reach-and-rights-table", wait: 5)
 
     within ".discourse-reach-and-rights-table" do
-      expect(page).to have_content("My group 0")
+      expect(page).to have_content("Testgroup")
     end
   end
 
@@ -78,7 +78,7 @@ RSpec.describe "Reach and Rights", type: :system do
     expect(page).to have_css(".discourse-reach-and-rights-short-container")
 
     within ".view-short" do
-      expect(page).to have_content("My group 0")
+      expect(page).to have_content("Testgroup")
     end
   end
 

@@ -72,6 +72,37 @@ describe DiscourseReachAndRights::PermissionsFetcher do
     expect(total_counts[3]).to eq(1) # user_a still 1 in count 3
   end
 
+  it "obfuscates hidden groups that the user cannot see" do
+    secret_group =
+      Fabricate(:group, visibility_level: Group.visibility_levels[:staff], name: "secret_group")
+    CategoryGroup.create!(category: category, group: secret_group, permission_type: 1)
+
+    # user_a is not staff, so they cannot see the group
+    result = described_class.call(category: category, guardian: Guardian.new(user_a))
+
+    perm = result.permissions.find { |p| p[:is_hidden] }
+    expect(perm).to be_present
+    expect(perm[:group_name]).to be_nil
+    expect(perm[:group_id]).to be_nil
+    expect(perm[:group_url]).to be_nil
+    expect(perm[:group_display_name]).to eq(I18n.t("discourse_reach_and_rights.hidden_group"))
+  end
+
+  it "shows hidden groups if the user is a member/staff" do
+    admin = Fabricate(:admin)
+    secret_group =
+      Fabricate(:group, visibility_level: Group.visibility_levels[:staff], name: "secret_group")
+    CategoryGroup.create!(category: category, group: secret_group, permission_type: 1)
+
+    # admin can see staff-only group
+    result = described_class.call(category: category, guardian: Guardian.new(admin))
+
+    perm = result.permissions.find { |p| p[:group_name] == "secret_group" }
+    expect(perm).to be_present
+    expect(perm[:is_hidden]).to be_falsey
+    expect(perm[:group_id]).to eq(secret_group.id)
+  end
+
   it "prioritizes Watching (3) over Watching First Post (4) in totals" do
     # Scenario: User belongs to two groups, one with Watching First Post default,
     # another with Watching default.
@@ -118,5 +149,18 @@ describe DiscourseReachAndRights::PermissionsFetcher do
     expected_count = User.where("id > 0").where(active: true, staged: false).count
     expect(reach).to eq(expected_count)
     expect(reach).to be >= 2 # At least user_a and user_b
+  end
+
+  it "excludes non-human (system) users from counts" do
+    group.add(Discourse.system_user)
+
+    result = described_class.call(category: category, guardian: Guardian.new(user_a))
+
+    # Total reach should still be 2 (user_a, user_b), system user is ignored
+    reach = result.category_notification_totals[:total_reach]
+    expect(reach).to eq(2)
+
+    group_data = result.permissions.find { |g| g[:group_id] == group.id }
+    expect(group_data[:user_count]).to eq(2)
   end
 end

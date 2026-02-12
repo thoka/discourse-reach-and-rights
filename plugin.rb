@@ -62,7 +62,7 @@ after_initialize do
         category_id: object.id,
         category_notification_totals: {
           "3" => stats&.[](:watching_count) || 0,
-          "4" => stats&.[](:watching_count_first_post) || 0,
+          "4" => stats&.[](:watching_first_post_count) || 0,
           "total_reach" => stats&.[](:reach_count) || 0,
         },
       }
@@ -79,7 +79,7 @@ after_initialize do
           c[:reach_and_rights] = {
             category_notification_totals: {
               "3" => stat[:watching_count],
-              "4" => stat[:watching_count_first_post],
+              "4" => stat[:watching_first_post_count],
               "total_reach" => stat[:reach_count],
             },
           }
