@@ -58,3 +58,11 @@ Discourse uses a multi-layered system for category notification levels:
 ## 7. Common Pitfalls
 *   **Server Restarts:** Changes to `plugin.rb` or any files in `config/` (like site settings or routes) **require** a full server restart to take effect.
 *   **Caching:** If styles don't appear after registration, a hard refresh (`Ctrl + F5`) or clearing `tmp/` might be necessary to force the asset compiler.
+
+## 8. Hidden Groups
+*   **Visibility:** In line with Discourse's privacy model, groups are only shown by name if the current user has visibility rights (determined via `Guardian`).
+*   **Obfuscation:** If a group is "secret" or not visible to the user:
+    - Its name is replaced with a localized "hidden" placeholder.
+    - Its ID and URL are nulled out to prevent inference or accidental discovery.
+    - However, its rights (permissions) and notification levels are still transferred to allow an accurate, though anonymous, overview of access and reach.
+*   **Frontend Handling:** The table view detects the absence of a URL/ID and renders the group name as static text instead of a link.

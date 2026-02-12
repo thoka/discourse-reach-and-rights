@@ -387,10 +387,14 @@ export default class ReachAndRightsTable extends Component {
                       }}"
                   >
                     <td class="group-name-cell cell">
-                      <a
-                        href={{perm.group_url}}
-                        class="group-link"
-                      >{{perm.group_display_name}}</a>
+                      {{#if perm.group_url}}
+                        <a
+                          href={{perm.group_url}}
+                          class="group-link"
+                        >{{perm.group_display_name}}</a>
+                      {{else}}
+                        <span class="group-name-static">{{perm.group_display_name}}</span>
+                      {{/if}}
 
                       {{#if perm.can_join}}
                         <a

@@ -58,6 +58,16 @@ When using `api.decorateCookedElement` with `helper.renderGlimmer`, arguments pa
 ### SVG Icons
 Icons used in GJS templates (via `dIcon` helper) must be explicitly registered in `plugin.rb` using `register_svg_icon`, otherwise they will not be included in the client-side SVG subset.
 
+### Hidden Groups and Privacy
+To protect group privacy while maintaining accuracy:
+- The `PermissionsFetcher` respects group visibility levels defined in Discourse.
+- If a group is not visible to the current user (e.g., a secret group they are not a member of), it is included in the response with:
+    - `group_name: nil`
+    - `group_id: nil`
+    - `group_url: nil`
+    - `group_display_name: I18n.t("hidden_group")`
+- This ensures that total reach and group-based rights remain visible without leaking the identity of secret groups.
+
 ### Important: Decorator vs. Glimmer Component Life-cycle
 1. **Method Binding**: In `.gjs` components, ensure all methods called from the template (like `getTotalCount`) use the `@action` decorator to maintain `this` context, especially when used inside nested loops or conditionals.
 2. **Defensive Programming**: Components rendered via BBCode might be initialized multiple times or before data is ready. Always use optional chaining (`this.data?.property`) in helper methods used by the template.
