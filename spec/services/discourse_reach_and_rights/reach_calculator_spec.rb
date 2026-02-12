@@ -34,7 +34,7 @@ describe DiscourseReachAndRights::ReachCalculator do
 
       # ml_user is watching because of mailing_list_mode and not muted
       expect(stat.watching_count).to eq(1)
-      expect(stat.watching_first_post_count).to eq(1)
+      expect(stat.watching_first_post_count).to eq(0)
     end
 
     it "excludes mailing list users if they muted the category" do

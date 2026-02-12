@@ -127,11 +127,6 @@ module ::DiscourseReachAndRights
             muted_level: muted_level,
           )
           .each_with_object({}) { |r, h| h[r.category_id] = r.count }
-
-      # Combine with watching_counts
-      watching_counts.each_with_object(results.dup) do |(c_id, count), h|
-        h[c_id] = (h[c_id] || 0) + count
-      end
     end
 
     def publish_updates(updates)

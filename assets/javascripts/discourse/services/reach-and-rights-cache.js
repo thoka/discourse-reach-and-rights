@@ -14,7 +14,11 @@ export default class ReachAndRightsCache extends Service {
   constructor() {
     super(...arguments);
     this.messageBus.subscribe("/reach-and-rights/stats", (msg) => {
-      this.updateStats(msg);
+      if (msg && msg.updates) {
+        msg.updates.forEach((update) => this.updateStats(update));
+      } else if (msg) {
+        this.updateStats(msg);
+      }
     });
   }
 

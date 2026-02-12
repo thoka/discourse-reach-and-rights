@@ -58,6 +58,24 @@ export default class ReachAndRightsSummary extends Component {
     return isNaN(parsed) || parsed <= 0 ? null : parsed;
   }
 
+  get isFirstPost() {
+    const args = this.args || {};
+    const outletArgs = args.outletArgs || {};
+
+    if (outletArgs.composer) {
+      return (
+        outletArgs.composer.action === "createTopic" ||
+        !!outletArgs.composer.creatingTopic
+      );
+    }
+
+    if (args.topic || outletArgs.topic) {
+      return false;
+    }
+
+    return true;
+  }
+
   get shouldShow() {
     if (!this.siteSettings.discourse_reach_and_rights_enabled) {
       return false;
@@ -79,7 +97,10 @@ export default class ReachAndRightsSummary extends Component {
     if (!data?.category_notification_totals) {
       return [];
     }
-    return [3, 4, 2, 0]
+
+    const levels = this.isFirstPost ? [3, 4, 2, 0] : [3, 2, 0];
+
+    return levels
       .map((lvl) => {
         const count = data.category_notification_totals[lvl] || 0;
         if (count > 0) {
@@ -102,6 +123,16 @@ export default class ReachAndRightsSummary extends Component {
 
   get totalReach() {
     return this.effectiveData?.category_notification_totals?.total_reach || 0;
+  }
+
+  get expectedNotificationCount() {
+    const data = this.effectiveData;
+    if (!data?.category_notification_totals) {
+      return 0;
+    }
+    const watching = data.category_notification_totals["3"] || 0;
+    const watchingFirst = data.category_notification_totals["4"] || 0;
+    return this.isFirstPost ? watching + watchingFirst : watching;
   }
 
   @action
@@ -169,15 +200,6 @@ export default class ReachAndRightsSummary extends Component {
               "discourse_reach_and_rights.loading"
             }}</span>
         {{else if this.effectiveData}}
-            <span
-              class="sum-symbol"
-              title={{i18n
-                "js.discourse_reach_and_rights.potential_notifications"
-              }}
-            ></span>
-            {{!-- 
-            <span class="summary-label">{{i18n "discourse_reach_and_rights.potential_notifications"}}:</span>
-            --}}
             <div class="notification-levels-container compact">
               <span
                 class="notification-level-item reach-total"
@@ -187,8 +209,16 @@ export default class ReachAndRightsSummary extends Component {
                 <span class="notification-count">{{this.totalReach}}</span>
               </span>
 
+              <span
+                class="notification-level-item notifications-total"
+                title={{i18n "js.discourse_reach_and_rights.potential_notifications"}}
+              >
+                {{dIcon "paper-plane"}}
+                <span class="notification-count">{{this.expectedNotificationCount}}</span>
+              </span>
+
               {{#each this.notificationTotals as |lvl|}}
-                <span class="notification-level-item">
+                <span class="notification-level-item detail">
                   {{dIcon lvl.icon}}
                   <span class="notification-count">{{lvl.count}}</span>
                 </span>

@@ -356,6 +356,13 @@
         .notification-count {
           font-weight: bold;
         }
+
+        &.detail {
+          opacity: 0.7;
+          border-left: 1px solid var(--primary-low);
+          padding-left: 0.5em;
+          margin-left: -0.25em;
+        }
       }
     }
 
