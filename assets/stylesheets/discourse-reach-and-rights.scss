@@ -338,6 +338,11 @@
 
     &:hover {
       background-color: var(--highlight-medium, var(--primary-low-mid));
+      color: var(--primary) !important;
+
+      .d-icon {
+        color: var(--primary) !important;
+      }
     }
   }
 
