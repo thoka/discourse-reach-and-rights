@@ -129,9 +129,10 @@
           vertical-align: middle;
 
           &.group-name-cell {
-            min-width: 15em;
             text-align: left;
             font-weight: bold;
+            white-space: normal;
+            word-break: break-word;
 
             // display: flex;
             align-items: center;
@@ -183,20 +184,12 @@
             color: var(--primary);
             text-align: center;
 
-            &.default-cell {
-              width: 50px;
-
-              .group-default-notification-icon {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-
-                .d-icon {
-                  width: 20px;
-                  height: 20px;
-                  color: var(--primary-high);
-                }
-              }
+            &.is-default {
+              background-color: var(--primary-low);
+              border-radius: 4px;
+              color: var(--primary-high);
+              font-weight: bold;
+              box-shadow: inset 0 0 0 1px var(--primary-low-mid);
             }
 
             .notification-levels-container {
@@ -460,4 +453,32 @@
 // Spezielle Korrektur für Buttons mit primären Farben
 .btn-primary .outreach-info {
   border-left-color: rgb(255, 255, 255, 0.3);
+}
+
+/* Modal Optimization */
+.reach-and-rights-details-modal {
+  .modal-body {
+    padding: 0 !important;
+
+    .discourse-reach-and-rights-container {
+      border: none !important;
+      border-radius: 0 !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .discourse-reach-and-rights-table {
+    font-size: 0.85em;
+    
+    .group-name-cell {
+      min-width: 0 !important;
+    }
+    
+    th, td {
+      padding: 0.4em 0.2em !important;
+    }
+  }
 }

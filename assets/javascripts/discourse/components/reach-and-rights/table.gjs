@@ -275,6 +275,11 @@ export default class ReachAndRightsTable extends Component {
   }
 
   @action
+  isDefaultLevel(perm, lvl) {
+    return perm.notification_level === lvl;
+  }
+
+  @action
   getTotalCount(level) {
     const data = this.effectiveData;
     if (!data?.category_notification_totals) {
@@ -344,7 +349,7 @@ export default class ReachAndRightsTable extends Component {
               <thead>
                 <tr>
                   <th colspan="3">Berechtigungen</th>
-                  <th colspan="5">Benachrichtigungen</th>
+                  <th colspan="4">Benachrichtigungen</th>
                 </tr>
                 <tr>
                   <th class="group-name-header">{{i18n
@@ -357,7 +362,6 @@ export default class ReachAndRightsTable extends Component {
                     }}
                   >{{dIcon "users"}}</th>
                   <th class="permission-badge-header"></th>
-                  <th class="notification-header default"></th>
                   <th
                     class="notification-header level-3"
                     title={{this.getNotificationTitle 3}}
@@ -431,29 +435,19 @@ export default class ReachAndRightsTable extends Component {
                         {{dIcon perm.permIcon}}
                       </div>
                     </td>
-                    <td class="notification-cell default-cell cell">
-                      {{#if perm.defaultIcon}}
-                        <div
-                          class="notification-badge default-notification"
-                          title={{perm.defaultTitle}}
-                        >
-                          {{dIcon perm.defaultIcon}}
-                        </div>
-                      {{/if}}
-                    </td>
-                    <td class="notification-cell level-3 cell">{{this.getCount
+                    <td class="notification-cell level-3 cell {{if (this.isDefaultLevel perm 3) 'is-default'}}">{{this.getCount
                         perm
                         3
                       }}</td>
-                    <td class="notification-cell level-4 cell">{{this.getCount
+                    <td class="notification-cell level-4 cell {{if (this.isDefaultLevel perm 4) 'is-default'}}">{{this.getCount
                         perm
                         4
                       }}</td>
-                    <td class="notification-cell level-2 cell">{{this.getCount
+                    <td class="notification-cell level-2 cell {{if (this.isDefaultLevel perm 2) 'is-default'}}">{{this.getCount
                         perm
                         2
                       }}</td>
-                    <td class="notification-cell level-0 cell">{{this.getCount
+                    <td class="notification-cell level-0 cell {{if (this.isDefaultLevel perm 0) 'is-default'}}">{{this.getCount
                         perm
                         0
                       }}</td>
@@ -468,7 +462,7 @@ export default class ReachAndRightsTable extends Component {
                   <td class="users-count-cell num" style="text-align: center;">
                     {{this.totalReach}}
                   </td>
-                  <td colspan="2"></td>
+                  <td colspan="1"></td>
                   <td
                     class="notification-cell level-3 cell"
                   >{{this.getTotalCount 3}}</td>
