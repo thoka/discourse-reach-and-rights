@@ -38,7 +38,7 @@ To avoid expensive on-the-fly calculations (especially for mailing list mode use
 
 ### Persistence & Distribution
 - **Storage**: PostgreSQL table `reach_and_rights_stats`.
-- **Background Job**: `Jobs::UpdateReachStats` (Scheduled) runs periodically (hourly) to refresh all categories.
+- **Background Job**: `Jobs::UpdateReachStats` (Scheduled) runs periodically (every 5 minutes) to refresh all categories.
 - **Initial Boot**: On plugin initialization, a deferred task checks if stats exist and runs the calculation if the table is empty.
 - **Real-time Updates**: Changes are published via `MessageBus` to `/reach-and-rights/stats`.
 - **Serialization**: 

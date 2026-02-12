@@ -2,7 +2,7 @@
 
 module Jobs
   class UpdateReachStats < ::Jobs::Scheduled
-    every 1.hour
+    every 5.minutes
 
     def execute(args)
       return if !SiteSetting.discourse_reach_and_rights_enabled

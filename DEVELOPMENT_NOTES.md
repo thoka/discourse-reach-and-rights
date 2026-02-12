@@ -47,7 +47,7 @@ Discourse uses a multi-layered system for category notification levels:
 *   **Mailing List Mode**: Users with `mailing_list_mode: true` are counted as "Watching" unless they have an explicit `muted` level for that category.
 *   **Hierarchy**: "Watching First Post" totals always include all users from the "Watching" pool, as they technically receive the first post as well.
 *   **Availability**: Stats are merged into the `categories` array in the `SiteSerializer` for global availability and injected into `BasicCategorySerializer` responses.
-*   **Updates**: Managed via `Jobs::UpdateReachStats` (Scheduled) and synchronized via `MessageBus` for active clients.
+*   **Updates**: Managed via `Jobs::UpdateReachStats` (Scheduled every 5 minutes) and synchronized via `MessageBus` for active clients.
 
 ## 7. Testing
 *   **System Specs:** Follow the Discourse development patterns for system tests.
