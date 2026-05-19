@@ -8,6 +8,7 @@ module Jobs
       return if !SiteSetting.discourse_reach_and_rights_enabled
 
       ::DiscourseReachAndRights::ReachCalculator.run
+      ::DiscourseReachAndRights::StatsStore.refresh!
     end
   end
 end

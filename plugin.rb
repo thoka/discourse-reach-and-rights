@@ -38,9 +38,6 @@ module ::DiscourseReachAndRights
 end
 
 require_relative "lib/discourse_reach_and_rights/engine"
-require_relative "lib/discourse_reach_and_rights/request_cache_middleware"
-
-Rails.configuration.middleware.use ::DiscourseReachAndRights::RequestCacheMiddleware
 
 after_initialize do
   require_relative "app/models/discourse_reach_and_rights/stat"
@@ -70,21 +67,24 @@ after_initialize do
   end
 
   add_to_serializer(:site, :categories) do
-    cats = object.categories.map { |c| c.to_h }
+    cats = object.categories
 
-    if SiteSetting.discourse_reach_and_rights_enabled && scope&.user &&
-         scope.user.trust_level >= SiteSetting.discourse_reach_and_rights_min_trust_level
-      cats.each do |c|
-        if stat = DiscourseReachAndRights::StatsStore.stats_for(c[:id])
-          c[:reach_and_rights] = {
-            category_notification_totals: {
-              "3" => stat[:watching_count],
-              "4" => stat[:watching_first_post_count],
-              "total_reach" => stat[:reach_count],
-            },
-          }
-        end
-      end
+    return cats if !SiteSetting.discourse_reach_and_rights_enabled
+    return cats if !scope&.user
+    return cats if scope.user.trust_level < SiteSetting.discourse_reach_and_rights_min_trust_level
+
+    stats = DiscourseReachAndRights::StatsStore.all_stats
+
+    cats.each do |c|
+      next if !(stat = stats[c[:id]])
+
+      c[:reach_and_rights] = {
+        category_notification_totals: {
+          "3" => stat[:watching_count],
+          "4" => stat[:watching_first_post_count],
+          "total_reach" => stat[:reach_count],
+        },
+      }
     end
 
     cats

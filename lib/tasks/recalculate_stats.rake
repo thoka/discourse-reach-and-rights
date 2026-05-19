@@ -12,6 +12,7 @@ namespace :reach_and_rights do
       Benchmark.measure do
         updates = ::DiscourseReachAndRights::ReachCalculator.run
         ::DiscourseReachAndRights::ReachCalculator.publish_updates(updates) if updates.any?
+        ::DiscourseReachAndRights::StatsStore.refresh!
       end
 
     puts I18n.t("discourse_reach_and_rights.recalculate_stats.finished")
