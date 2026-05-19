@@ -35,7 +35,11 @@ export default {
 
           placeholders.forEach((placeholder) => {
             let categoryId = placeholder.dataset.category;
-            const view = placeholder.dataset.view || "table";
+            const view =
+              placeholder.dataset.view ||
+              placeholder.getAttribute("data-view") ||
+              siteSettings.discourse_reach_and_rights_default_view ||
+              "table";
             const showHeader = placeholder.dataset.showHeader;
             const style = placeholder.dataset.style;
 

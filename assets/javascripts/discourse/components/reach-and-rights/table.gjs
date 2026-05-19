@@ -22,6 +22,10 @@ export default class ReachAndRightsTable extends Component {
 
   _lastCategoryId = null;
 
+  get componentArgs() {
+    return this.args?.data || this.args || {};
+  }
+
   get categoryId() {
     if (!this || this.isDestroyed || this.isDestroying) {
       return null;
@@ -31,8 +35,12 @@ export default class ReachAndRightsTable extends Component {
       return this._manualCategoryId;
     }
 
-    const args = this.args || {};
-    let rawId = args.categoryId || args.model?.categoryId;
+    const args = this.componentArgs;
+    let rawId =
+      args.categoryId ||
+      args.model?.categoryId ||
+      args.category?.id ||
+      args.topic?.category_id;
 
     const isValidId = (id) => {
       const parsed = parseInt(id, 10);
@@ -78,7 +86,8 @@ export default class ReachAndRightsTable extends Component {
   }
 
   get showHeader() {
-    return this.args.showHeader !== "false" && this.args.showHeader !== false;
+    const showHeader = this.componentArgs.showHeader;
+    return showHeader !== "false" && showHeader !== false;
   }
 
   get shouldRender() {
@@ -86,8 +95,9 @@ export default class ReachAndRightsTable extends Component {
   }
 
   get viewType() {
+    const view = this.componentArgs.view;
     return (
-      this.args.view ||
+      (typeof view === "string" ? view.trim().toLowerCase() : view) ||
       this.siteSettings.discourse_reach_and_rights_default_view ||
       "table"
     );
@@ -98,7 +108,11 @@ export default class ReachAndRightsTable extends Component {
   }
 
   get category() {
-    return this.args.category || Category.findById(this.categoryId);
+    return this.componentArgs.category || Category.findById(this.categoryId);
+  }
+
+  get styleArg() {
+    return this.componentArgs.style;
   }
 
   get localizedTableTitle() {
@@ -131,10 +145,10 @@ export default class ReachAndRightsTable extends Component {
     }
 
     if (
-      this.args.data?.group_permissions &&
-      this.args.data.group_permissions.length > 0
+      this.componentArgs.group_permissions &&
+      this.componentArgs.group_permissions.length > 0
     ) {
-      this.data = this.args.data;
+      this.data = this.componentArgs;
       return;
     }
 
@@ -282,8 +296,9 @@ export default class ReachAndRightsTable extends Component {
     {{#if this.shouldRender}}
       <div
         class="discourse-reach-and-rights-container view-{{this.viewType}}"
-        style={{@style}}
+        style={{this.styleArg}}
         {{didInsert this.fetchData}}
+        {{didUpdate this.fetchData @data.categoryId}}
         {{didUpdate this.fetchData @categoryId}}
       >
         {{#if this.loading}}
