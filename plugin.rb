@@ -47,26 +47,12 @@ after_initialize do
   require_relative "app/services/discourse_reach_and_rights/stats_store"
   require_relative "app/jobs/scheduled/update_reach_stats"
 
-  %i[category basic_category].each do |s|
-    add_to_serializer(s, :reach_and_rights) do
-      return nil if !SiteSetting.discourse_reach_and_rights_enabled
-      return nil if !scope&.user
-      return nil if scope.user.trust_level < SiteSetting.discourse_reach_and_rights_min_trust_level
+  # Kein eigener Hook auf category/basic_category: Das Frontend bezieht die
+  # Daten aus dem Site-Serializer bzw. /c/:id/reach-and-rights. Ein Attribut
+  # an BasicCategorySerializer (inkl. aller Descendants) wuerde bei jeder
+  # beliebigen Kategorie-Serialisierung zusaetzlich feuern.
 
-      stats = DiscourseReachAndRights::StatsStore.stats_for(object.id)
-
-      {
-        category_id: object.id,
-        category_notification_totals: {
-          "3" => stats&.[](:watching_count) || 0,
-          "4" => stats&.[](:watching_first_post_count) || 0,
-          "total_reach" => stats&.[](:reach_count) || 0,
-        },
-      }
-    end
-  end
-
-  add_to_serializer(:site, :categories) do
+  add_to_serializer(:site, :categories, respect_plugin_enabled: false) do
     cats = object.categories
 
     return cats if !SiteSetting.discourse_reach_and_rights_enabled
